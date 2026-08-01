@@ -467,14 +467,44 @@ function buildOutputPages(count) {
   return [...problemPages, ...answerPages];
 }
 
-function printMazes(count) {
+function waitForPrintLayout() {
+  const frames = new Promise((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 120)));
+  });
+  return document.fonts?.ready ? Promise.all([document.fonts.ready, frames]) : frames;
+}
+
+async function printMazes(count) {
+  const original = elements.printMaze.innerHTML;
+  elements.printMaze.disabled = true;
+  elements.printMaze.textContent = `미로 ${count}개 준비 중…`;
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+
   const pages = buildOutputPages(count);
   elements.printArea.replaceChildren(...pages);
   elements.status.textContent = `미로 ${count}개를 인쇄할 준비가 됐어요`;
+  await waitForPrintLayout();
 
-  const restorePreview = () => render();
+  elements.printMaze.disabled = false;
+  elements.printMaze.innerHTML = original;
+
+  let restored = false;
+  const restorePreview = () => {
+    if (restored) return;
+    restored = true;
+    setTimeout(render, 300);
+  };
+  const printMedia = window.matchMedia("print");
+  const handlePrintMedia = (event) => {
+    if (!event.matches) {
+      printMedia.removeEventListener?.("change", handlePrintMedia);
+      restorePreview();
+    }
+  };
+
   window.addEventListener("afterprint", restorePreview, { once: true });
-  requestAnimationFrame(() => window.print());
+  printMedia.addEventListener?.("change", handlePrintMedia);
+  window.print();
 }
 
 elements.difficultySlider.addEventListener("input", () => {
