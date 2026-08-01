@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="아이를 위한 A4 인쇄용 미로 활동지 생성기" />
+    <title>미로 놀이터</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div class="brand-mark" aria-hidden="true">▦</div>
+        <div>
+          <p>PRINTABLE MAZE MAKER</p>
+          <h1>미로 놀이터</h1>
+          <span>아이에게 맞는 난이도로 인쇄용 미로를 만들어요.</span>
+        </div>
+      </header>
+
+      <div class="app-main">
+        <aside class="controls-pane" aria-label="미로 만들기 설정">
+          <section class="control-card">
+            <div class="control-heading">
+              <span>1</span>
+              <div>
+                <h2>난이도</h2>
+                <p id="difficulty-description">길이 넓고 갈림길이 적어요</p>
+              </div>
+            </div>
+            <div class="choice-row difficulty-grid" aria-label="난이도 선택">
+              <button type="button" class="choice-button" data-difficulty="easy" aria-pressed="true">쉬움</button>
+              <button type="button" class="choice-button" data-difficulty="medium" aria-pressed="false">보통</button>
+              <button type="button" class="choice-button" data-difficulty="hard" aria-pressed="false">어려움</button>
+              <button type="button" class="choice-button expert-choice" data-difficulty="expert" aria-pressed="false">매우 어려움</button>
+            </div>
+          </section>
+
+          <section class="control-card">
+            <div class="control-heading">
+              <span>2</span>
+              <div>
+                <h2>종이 한 장에</h2>
+                <p>크게 하나 또는 알차게 둘</p>
+              </div>
+            </div>
+            <div class="choice-row two-columns" aria-label="페이지당 미로 수">
+              <button type="button" class="choice-button" data-per-page="1" aria-pressed="true">1개 크게</button>
+              <button type="button" class="choice-button" data-per-page="2" aria-pressed="false">2개씩</button>
+            </div>
+            <label class="check-row">
+              <input id="print-answers" type="checkbox" checked />
+              <span>정답지도 함께 인쇄</span>
+            </label>
+          </section>
+
+          <div class="primary-actions">
+            <button id="new-maze" type="button" class="new-button"><span aria-hidden="true">↻</span>새 미로 만들기</button>
+            <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄 · PDF 저장</button>
+          </div>
+
+          <p class="print-tip">인쇄 창에서 용지는 <b>A4</b>, 배율은 <b>100%</b>를 권장해요.</p>
+        </aside>
+
+        <section class="preview-pane" aria-label="활동지 미리보기">
+          <div class="preview-toolbar">
+            <div>
+              <p>활동지 미리보기</p>
+              <span id="status" aria-live="polite">1개의 미로가 준비됐어요</span>
+            </div>
+            <button id="toggle-solution" type="button" class="solution-button" aria-pressed="false">정답 보기</button>
+          </div>
+          <div class="preview-stage">
+            <div id="print-area" class="print-area"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
