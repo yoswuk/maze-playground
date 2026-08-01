@@ -25,7 +25,7 @@ body {
 }
 
 button, input { font: inherit; }
-button { color: inherit; }
+button { color: inherit; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 button:focus-visible, input:focus-visible {
   outline: 3px solid rgba(242, 109, 80, .42);
   outline-offset: 3px;
@@ -74,18 +74,6 @@ button:focus-visible, input:focus-visible {
   box-shadow: 0 12px 36px rgba(48, 63, 58, .06);
 }
 .control-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.control-heading > span {
-  width: 31px;
-  height: 31px;
-  flex: 0 0 31px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--teal-soft);
-  color: var(--teal);
-  font-size: 13px;
-  font-weight: 900;
-}
 .control-heading h2, .control-heading p { margin: 0; }
 .control-heading h2 { font-size: 16px; font-weight: 900; }
 .control-heading p { margin-top: 2px; color: var(--muted); font-size: 12px; }
@@ -122,35 +110,6 @@ button:focus-visible, input:focus-visible {
 .check-row input { width: 19px; height: 19px; accent-color: var(--teal); }
 .output-check { min-height: 30px; justify-content: center; margin: 0; font-size: 12px; }
 
-.maze-lookup label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 800; }
-.lookup-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
-.lookup-row input {
-  min-width: 0;
-  height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  padding: 0 11px;
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .035em;
-}
-.lookup-row input::placeholder { color: #a6aaa6; font-weight: 600; letter-spacing: 0; }
-.lookup-row button {
-  min-width: 76px;
-  border: 0;
-  border-radius: 12px;
-  background: var(--teal);
-  color: white;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 900;
-}
-.lookup-row button:hover { background: #115f56; }
-.lookup-message { min-height: 16px; margin: 6px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.4; }
-.lookup-message.is-error { color: #b52f2a; }
-
 .new-maze-action { margin-top: 10px; }
 .new-maze-action button, .output-buttons button, .solution-button {
   min-height: 50px;
@@ -181,7 +140,6 @@ button:focus-visible, input:focus-visible {
 }
 .output-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .output-panel .output-check { margin-top: 9px; }
-.lookup-panel { width: min(100%, 794px); margin: 16px auto 0; }
 
 .preview-pane { min-width: 0; }
 .preview-toolbar { min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
@@ -267,30 +225,60 @@ button:focus-visible, input:focus-visible {
 .pdf-capture-host .worksheet-header h2 { font-size: 30px; }
 .pdf-capture-host .worksheet-kicker { font-size: 11px; }
 .pdf-capture-host .worksheet-header p:not(.worksheet-kicker) { font-size: 12px; }
-.pdf-capture-host .worksheet-fields { font-size: 11px; }
+.pdf-capture-host .worksheet-fields { min-width: 160px; gap: 9px 8px; font-size: 11px; }
+.pdf-capture-host .worksheet-fields i { width: 95px; height: 14px; }
 .pdf-capture-host .maze-panel { max-width: 650px; }
 .pdf-capture-host .maze-panel-title strong { font-size: 16px; }
 .pdf-capture-host .maze-panel-title span { font-size: 9px; }
 .pdf-capture-host .maze-svg { max-height: 720px; }
+.pdf-capture-host .maze-walls { stroke-width: 4px; }
+.pdf-capture-host .solution-path { stroke-width: 8px; }
 .pdf-capture-host .worksheet-footer { font-size: 10px; }
 
 @media (max-width: 980px) {
-  .app-main { grid-template-columns: 1fr; }
+  .app-main { grid-template-columns: 1fr; gap: 20px; }
   .controls-pane { position: static; grid-template-columns: 1fr; }
-  .print-tip { grid-column: 1 / -1; }
 }
 @media (max-width: 720px) {
-  .app-shell { padding: 22px 14px 48px; }
-  .brand-mark { width: 58px; height: 58px; flex-basis: 58px; border-radius: 18px 18px 18px 7px; font-size: 27px; }
-  .app-header span { font-size: 13px; }
-  .controls-pane { grid-template-columns: 1fr; }
-  .preview-stage { min-height: 420px; border-radius: 20px; padding: 12px; }
-  .worksheet-page { padding: 16px; }
+  .app-shell { padding: 16px 12px calc(34px + env(safe-area-inset-bottom)); }
+  .app-header { margin-bottom: 16px; gap: 12px; }
+  .brand-mark { width: 48px; height: 48px; flex-basis: 48px; border-radius: 15px 15px 15px 6px; font-size: 23px; box-shadow: 0 6px 0 rgba(217, 79, 53, .12); }
+  .app-header p { display: none; }
+  .app-header h1 { font-size: 27px; }
+  .app-header span { margin-top: 4px; font-size: 12px; line-height: 1.4; }
+  .app-main { gap: 16px; }
+  .control-card { border-radius: 18px; padding: 14px; }
+  .control-heading { margin-bottom: 10px; }
+  .control-heading h2 { font-size: 15px; }
+  .control-heading p { font-size: 11px; }
+  .choice-row { gap: 7px; }
+  .choice-button { min-height: 48px; padding: 7px 6px; font-size: 12px; }
+  .difficulty-size { font-size: 9px; }
+  .new-maze-action { margin-top: 8px; }
+  .new-maze-action button, .output-buttons button { min-height: 48px; }
+  .preview-toolbar { min-height: 46px; margin-bottom: 8px; gap: 10px; }
+  .preview-toolbar p { font-size: 15px; }
+  .preview-toolbar span { font-size: 11px; }
+  .solution-button { min-width: 96px; min-height: 44px; padding: 0 12px; }
+  .preview-stage { min-height: 0; border-radius: 18px; padding: 8px; }
+  .worksheet-page { padding: 14px; box-shadow: 0 14px 34px rgba(52, 58, 49, .13); }
   .worksheet-header { gap: 8px; padding-bottom: 8px; }
   .worksheet-fields { min-width: 100px; gap: 5px; }
   .worksheet-fields i { width: 62px; height: 9px; }
+  .output-panel { margin-top: 12px; border-radius: 16px; padding: 10px; }
+  .output-buttons { gap: 8px; }
+  .output-panel .output-check { min-height: 36px; margin-top: 6px; }
+  .print-tip { margin-top: 2px; font-size: 10px; }
   .maze-walls { stroke-width: 2.4px; }
   .solution-path { stroke-width: 5px; }
+}
+@media (max-width: 420px) {
+  .difficulty-grid .choice-button { min-height: 56px; flex-direction: column; gap: 3px; }
+  .worksheet-header h2 { font-size: 18px; }
+  .worksheet-header p:not(.worksheet-kicker) { font-size: 8px; }
+}
+@media (hover: none) {
+  .choice-button:hover { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
@@ -300,7 +288,7 @@ button:focus-visible, input:focus-visible {
 @media print {
   html, body { width: 210mm; margin: 0 !important; background: white !important; }
   .app-shell { min-height: 0; padding: 0; }
-  .app-header, .controls-pane, .preview-toolbar, .lookup-panel, .output-panel { display: none !important; }
+  .app-header, .controls-pane, .preview-toolbar, .output-panel { display: none !important; }
   .app-main, .preview-pane, .preview-stage, .print-area { display: block; width: auto; margin: 0; padding: 0; border: 0; background: white; overflow: visible; }
   .worksheet-page { width: 190mm; height: 277mm; min-height: 277mm; max-width: none; aspect-ratio: auto; margin: 0; padding: 8mm 8mm 6mm; border: 0; box-shadow: none; break-after: page; page-break-after: always; }
   .worksheet-page:last-child { break-after: auto; page-break-after: auto; }
