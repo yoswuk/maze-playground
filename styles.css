@@ -151,8 +151,8 @@ button:focus-visible, input:focus-visible {
 .lookup-message { min-height: 16px; margin: 6px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.4; }
 .lookup-message.is-error { color: #b52f2a; }
 
-.primary-actions { display: block; }
-.primary-actions button, .output-buttons button, .solution-button {
+.new-maze-action { margin-top: 10px; }
+.new-maze-action button, .output-buttons button, .solution-button {
   min-height: 50px;
   border: 0;
   border-radius: 15px;
@@ -276,7 +276,7 @@ button:focus-visible, input:focus-visible {
 @media (max-width: 980px) {
   .app-main { grid-template-columns: 1fr; }
   .controls-pane { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .primary-actions, .print-tip { grid-column: 1 / -1; }
+  .print-tip { grid-column: 1 / -1; }
 }
 @media (max-width: 720px) {
   .app-shell { padding: 22px 14px 48px; }
