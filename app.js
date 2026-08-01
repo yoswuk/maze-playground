@@ -18,6 +18,10 @@ const DIFFICULTIES = {
     label: "매우 어려움", color: "#d64b45", size: 30, newestChance: 0.58, straightChance: 0.06, candidateCount: 20,
     targets: { detour: 5.4, deadEnds: 0.20, turns: 0.56, decisions: 0.22, decoyDepth: 7, nearGoalTrap: 9, longestStraight: 0.06 },
   },
+  extreme: {
+    label: "극한", color: "#8b3fb3", size: 36, newestChance: 0.52, straightChance: 0.01, candidateCount: 24,
+    targets: { detour: 5.5, deadEnds: 0.215, turns: 0.61, decisions: 0.32, decoyDepth: 8, nearGoalTrap: 12, longestStraight: 0.04 },
+  },
 };
 const DIRS = [
   { dr: -1, dc: 0 },
@@ -25,7 +29,7 @@ const DIRS = [
   { dr: 1, dc: 0 },
   { dr: 0, dc: -1 },
 ];
-const DIFFICULTY_KEYS = ["easy", "medium", "hard", "expert"];
+const DIFFICULTY_KEYS = ["easy", "medium", "hard", "expert", "extreme"];
 
 const state = {
   difficulty: "easy",

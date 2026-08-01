@@ -82,9 +82,10 @@ button:focus-visible, input:focus-visible {
 .difficulty-ticks { position: relative; height: 8px; margin: -1px 12px 0; }
 .difficulty-ticks i { position: absolute; top: 1px; width: 6px; height: 6px; border-radius: 50%; background: #c5c7c1; transform: translateX(-50%); transition: background 150ms ease, transform 150ms ease; }
 .difficulty-ticks i:nth-child(1) { left: 0; }
-.difficulty-ticks i:nth-child(2) { left: 33.333%; }
-.difficulty-ticks i:nth-child(3) { left: 66.667%; }
-.difficulty-ticks i:nth-child(4) { left: 100%; }
+.difficulty-ticks i:nth-child(2) { left: 25%; }
+.difficulty-ticks i:nth-child(3) { left: 50%; }
+.difficulty-ticks i:nth-child(4) { left: 75%; }
+.difficulty-ticks i:nth-child(5) { left: 100%; }
 .difficulty-ticks i[data-active="true"] { background: var(--difficulty-color, #2f9e68); transform: translateX(-50%) scale(1.35); }
 .new-button:active, .print-button:active { transform: translateY(2px); }
 .check-row { min-height: 44px; display: flex; align-items: center; gap: 10px; margin-top: 10px; color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 700; }
