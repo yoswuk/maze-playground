@@ -3,14 +3,14 @@
 const NS = "http://www.w3.org/2000/svg";
 const DIFFICULTIES = {
   easy: {
-    label: "쉬움", size: 8, newestChance: 0.96, straightChance: 0.68, candidateCount: 8,
+    label: "쉬움", size: 12, newestChance: 0.96, straightChance: 0.68, candidateCount: 8,
     targets: { solutionRatio: 0.34, deadEndRatio: 0.09, turnRatio: 0.24, branchDepth: 3.5 },
-    description: "8×8 · 길이 넓고 갈림길이 적어요",
+    description: "12×12 · 길이 넓고 갈림길이 적어요",
   },
   medium: {
-    label: "보통", size: 16, newestChance: 0.82, straightChance: 0.35, candidateCount: 9,
+    label: "보통", size: 18, newestChance: 0.82, straightChance: 0.35, candidateCount: 9,
     targets: { solutionRatio: 0.27, deadEndRatio: 0.15, turnRatio: 0.38, branchDepth: 3 },
-    description: "16×16 · 적당한 갈림길과 우회로가 있어요",
+    description: "18×18 · 적당한 갈림길과 우회로가 있어요",
   },
   hard: {
     label: "어려움", size: 24, newestChance: 0.68, straightChance: 0.14, candidateCount: 10,
@@ -18,9 +18,9 @@ const DIFFICULTIES = {
     description: "24×24 · 긴 정답 길과 헷갈리는 막다른 길이 많아요",
   },
   expert: {
-    label: "매우 어려움", size: 32, newestChance: 0.58, straightChance: 0.06, candidateCount: 12,
+    label: "매우 어려움", size: 30, newestChance: 0.58, straightChance: 0.06, candidateCount: 12,
     targets: { solutionRatio: 0.16, deadEndRatio: 0.21, turnRatio: 0.55, branchDepth: 2.2 },
-    description: "32×32 · 길고 촘촘한 최고난도 미로예요",
+    description: "30×30 · 길고 촘촘한 최고난도 미로예요",
   },
 };
 const DIRS = [
