@@ -110,7 +110,7 @@ button:focus-visible, input:focus-visible {
 .check-row input { width: 19px; height: 19px; accent-color: var(--teal); }
 .output-check { min-height: 30px; justify-content: center; margin: 0; font-size: 12px; }
 
-.new-maze-action { margin-top: 10px; }
+.new-maze-action { width: min(100%, 794px); margin: 14px auto 0; }
 .new-maze-action button, .output-buttons button, .solution-button {
   min-height: 50px;
   border: 0;
@@ -267,7 +267,7 @@ button:focus-visible, input:focus-visible {
   .choice-row { gap: 7px; }
   .choice-button { min-height: 48px; padding: 7px 6px; font-size: 12px; }
   .difficulty-size { font-size: 9px; }
-  .new-maze-action { margin-top: 8px; }
+  .new-maze-action { margin-top: 10px; }
   .new-maze-action button, .output-buttons button { min-height: 48px; }
   .preview-toolbar { min-height: 46px; margin-bottom: 8px; gap: 10px; }
   .preview-toolbar p { font-size: 15px; }
@@ -304,7 +304,7 @@ button:focus-visible, input:focus-visible {
 @media print {
   html, body { width: 210mm; margin: 0 !important; background: white !important; }
   .app-shell { min-height: 0; padding: 0; }
-  .app-header, .controls-pane, .preview-toolbar, .output-panel { display: none !important; }
+  .app-header, .controls-pane, .preview-toolbar, .new-maze-action, .output-panel { display: none !important; }
   .app-main, .preview-pane, .preview-stage, .print-area { display: block; width: auto; margin: 0; padding: 0; border: 0; background: white; overflow: visible; }
   .worksheet-page { width: 190mm; height: 277mm; min-height: 277mm; max-width: none; aspect-ratio: auto; margin: 0; padding: 8mm 8mm 6mm; border: 0; box-shadow: none; break-after: page; page-break-after: always; }
   .worksheet-page:last-child { break-after: auto; page-break-after: auto; }

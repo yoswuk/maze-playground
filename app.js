@@ -3,23 +3,23 @@
 const NS = "http://www.w3.org/2000/svg";
 const DIFFICULTIES = {
   easy: {
-    label: "쉬움", size: 12, newestChance: 0.96, straightChance: 0.68, candidateCount: 8,
-    targets: { solutionRatio: 0.34, deadEndRatio: 0.09, turnRatio: 0.24, branchDepth: 3.5 },
+    label: "쉬움", size: 12, newestChance: 0.96, straightChance: 0.68, candidateCount: 12,
+    targets: { detour: 2.4, deadEnds: 0.08, turns: 0.24, decisions: 0.08, decoyDepth: 8, nearGoalTrap: 12, longestStraight: 0.20 },
     description: "12×12 · 길이 넓고 갈림길이 적어요",
   },
   medium: {
-    label: "보통", size: 18, newestChance: 0.82, straightChance: 0.35, candidateCount: 9,
-    targets: { solutionRatio: 0.27, deadEndRatio: 0.15, turnRatio: 0.38, branchDepth: 3 },
+    label: "보통", size: 18, newestChance: 0.82, straightChance: 0.35, candidateCount: 14,
+    targets: { detour: 3.3, deadEnds: 0.13, turns: 0.38, decisions: 0.13, decoyDepth: 7.5, nearGoalTrap: 10, longestStraight: 0.12 },
     description: "18×18 · 적당한 갈림길과 우회로가 있어요",
   },
   hard: {
-    label: "어려움", size: 24, newestChance: 0.68, straightChance: 0.14, candidateCount: 10,
-    targets: { solutionRatio: 0.20, deadEndRatio: 0.19, turnRatio: 0.50, branchDepth: 2.5 },
+    label: "어려움", size: 24, newestChance: 0.68, straightChance: 0.14, candidateCount: 16,
+    targets: { detour: 4.4, deadEnds: 0.17, turns: 0.49, decisions: 0.18, decoyDepth: 5.5, nearGoalTrap: 6, longestStraight: 0.08 },
     description: "24×24 · 긴 정답 길과 헷갈리는 막다른 길이 많아요",
   },
   expert: {
-    label: "매우 어려움", size: 30, newestChance: 0.58, straightChance: 0.06, candidateCount: 12,
-    targets: { solutionRatio: 0.16, deadEndRatio: 0.21, turnRatio: 0.55, branchDepth: 2.2 },
+    label: "매우 어려움", size: 30, newestChance: 0.58, straightChance: 0.06, candidateCount: 20,
+    targets: { detour: 5.4, deadEnds: 0.20, turns: 0.56, decisions: 0.22, decoyDepth: 7, nearGoalTrap: 9, longestStraight: 0.06 },
     description: "30×30 · 길고 촘촘한 최고난도 미로예요",
   },
 };
@@ -198,7 +198,11 @@ function measureMaze(adjacency, solution, size) {
   const total = size * size;
   const degrees = adjacency.map((neighbors) => neighbors.length);
   const deadEnds = degrees.reduce((count, degree) => count + Number(degree === 1), 0);
+  const solutionIndices = solution.map((cell) => indexOfCell(cell.row, cell.col, size));
+  const solutionSet = new Set(solutionIndices);
   let turns = 0;
+  let currentStraight = 1;
+  let longestStraight = 1;
 
   for (let index = 2; index < solution.length; index += 1) {
     const previous = solution[index - 2];
@@ -206,31 +210,49 @@ function measureMaze(adjacency, solution, size) {
     const next = solution[index];
     const firstDirection = [current.row - previous.row, current.col - previous.col];
     const secondDirection = [next.row - current.row, next.col - current.col];
-    if (firstDirection[0] !== secondDirection[0] || firstDirection[1] !== secondDirection[1]) turns += 1;
+    if (firstDirection[0] !== secondDirection[0] || firstDirection[1] !== secondDirection[1]) {
+      turns += 1;
+      currentStraight = 1;
+    } else {
+      currentStraight += 1;
+      longestStraight = Math.max(longestStraight, currentStraight);
+    }
   }
 
-  let branchDepthTotal = 0;
-  for (let leaf = 0; leaf < total; leaf += 1) {
-    if (degrees[leaf] !== 1) continue;
-    let previous = -1;
-    let current = leaf;
-    let depth = 0;
-    while (degrees[current] <= 2) {
-      const next = adjacency[current].find((neighbor) => neighbor !== previous);
-      if (next === undefined) break;
-      previous = current;
-      current = next;
-      depth += 1;
-      if (degrees[current] !== 2) break;
+  const decoyDepths = [];
+  let nearGoalTrapDepth = 0;
+  let decisions = 0;
+  solutionIndices.forEach((pathCell, pathPosition) => {
+    const offRoute = adjacency[pathCell].filter((neighbor) => !solutionSet.has(neighbor));
+    if (offRoute.length) decisions += 1;
+    for (const branchStart of offRoute) {
+      let deepest = 0;
+      const stack = [[branchStart, pathCell, 1]];
+      while (stack.length) {
+        const [current, previous, depth] = stack.pop();
+        deepest = Math.max(deepest, depth);
+        for (const next of adjacency[current]) {
+          if (next !== previous && !solutionSet.has(next)) stack.push([next, current, depth + 1]);
+        }
+      }
+      decoyDepths.push(deepest);
+      if (pathPosition >= solutionIndices.length * 0.7) {
+        nearGoalTrapDepth = Math.max(nearGoalTrapDepth, deepest);
+      }
     }
-    branchDepthTotal += depth;
-  }
+  });
+
+  const minimumRoute = size - 1 + Math.abs(solution[0].row - solution[solution.length - 1].row);
+  const averageDecoyDepth = decoyDepths.reduce((sum, depth) => sum + depth, 0) / Math.max(1, decoyDepths.length);
 
   return {
-    solutionRatio: (solution.length - 1) / Math.max(1, total - 1),
+    detourFactor: (solution.length - 1) / Math.max(1, minimumRoute),
     deadEndRatio: deadEnds / total,
     turnRatio: turns / Math.max(1, solution.length - 2),
-    averageBranchDepth: branchDepthTotal / Math.max(1, deadEnds),
+    decisionDensity: decisions / Math.max(1, solution.length - 2),
+    averageDecoyDepth,
+    nearGoalTrapDepth,
+    longestStraightRatio: longestStraight / Math.max(1, solution.length - 1),
   };
 }
 
@@ -239,11 +261,17 @@ function targetFit(value, target) {
 }
 
 function qualityScore(metrics, targets) {
-  const solutionFit = targetFit(metrics.solutionRatio, targets.solutionRatio);
-  const deadEndFit = targetFit(metrics.deadEndRatio, targets.deadEndRatio);
-  const turnFit = targetFit(metrics.turnRatio, targets.turnRatio);
-  const branchDepthFit = Math.min(metrics.averageBranchDepth / targets.branchDepth, 1);
-  return solutionFit * 4 + deadEndFit * 2 + turnFit * 1.25 + branchDepthFit * 0.75;
+  const fits = {
+    detour: targetFit(metrics.detourFactor, targets.detour),
+    deadEnds: targetFit(metrics.deadEndRatio, targets.deadEnds),
+    turns: targetFit(metrics.turnRatio, targets.turns),
+    decisions: targetFit(metrics.decisionDensity, targets.decisions),
+    decoyDepth: targetFit(metrics.averageDecoyDepth, targets.decoyDepth),
+    nearGoalTrap: targetFit(metrics.nearGoalTrapDepth, targets.nearGoalTrap),
+    longestStraight: targetFit(metrics.longestStraightRatio, targets.longestStraight),
+  };
+  return fits.detour * 3 + fits.decisions * 2.4 + fits.decoyDepth * 1.8 +
+    fits.nearGoalTrap * 1.4 + fits.deadEnds * 1.2 + fits.turns + fits.longestStraight * 0.8;
 }
 
 function buildCandidate(config, seed) {
@@ -258,6 +286,7 @@ function buildCandidate(config, seed) {
     start: { ...cellFromIndex(route.startIndex, size), direction: "left" },
     end: { ...cellFromIndex(route.endIndex, size), direction: "right" },
     solution: route.solution,
+    metrics,
     quality: qualityScore(metrics, config.targets),
   };
 }

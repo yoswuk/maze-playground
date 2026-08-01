@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="아이를 위한 A4 인쇄용 미로 활동지 생성기" />
     <title>미로 놀이터</title>
-    <link rel="stylesheet" href="./styles.css?v=20260801-5" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-6" />
   </head>
   <body>
     <main class="app-shell">
@@ -33,9 +33,6 @@
               <button type="button" class="choice-button" data-difficulty="hard" aria-pressed="false"><span>어려움</span><small class="difficulty-size">24×24</small></button>
               <button type="button" class="choice-button expert-choice" data-difficulty="expert" aria-pressed="false"><span>매우 어려움</span><small class="difficulty-size">30×30</small></button>
             </div>
-            <div class="new-maze-action">
-              <button id="new-maze" type="button" class="new-button"><span aria-hidden="true">↻</span>새 미로 만들기</button>
-            </div>
           </section>
 
         </aside>
@@ -50,6 +47,9 @@
           </div>
           <div class="preview-stage">
             <div id="print-area" class="print-area"></div>
+          </div>
+          <div class="new-maze-action">
+            <button id="new-maze" type="button" class="new-button"><span aria-hidden="true">↻</span>새 미로 만들기</button>
           </div>
           <div class="output-panel" aria-label="인쇄와 PDF 저장">
             <div class="output-buttons">
@@ -73,6 +73,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260801-5" defer></script>
+    <script src="./app.js?v=20260801-6" defer></script>
   </body>
 </html>
