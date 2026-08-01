@@ -317,7 +317,7 @@ function svgElement(name, attributes = {}) {
 }
 
 function renderMazeSvg(maze, showSolution, answer) {
-  const padding = 1.7;
+  const padding = 1.85;
   const svg = svgElement("svg", {
     class: "maze-svg",
     viewBox: `${-padding} ${-padding} ${maze.size + padding * 2} ${maze.size + padding * 2}`,
@@ -352,8 +352,8 @@ function renderMazeSvg(maze, showSolution, answer) {
   }
   svg.append(walls);
 
-  const startOutside = { x: -0.32, y: maze.start.row + 0.5 };
-  const endOutside = { x: maze.size + 0.32, y: maze.end.row + 0.5 };
+  const startOutside = { x: -0.28, y: maze.start.row + 0.5 };
+  const endOutside = { x: maze.size + 0.28, y: maze.end.row + 0.5 };
   if (showSolution || answer) {
     const points = [
       `${startOutside.x},${startOutside.y}`,
@@ -369,15 +369,22 @@ function renderMazeSvg(maze, showSolution, answer) {
 
   const addEndpoint = (kind, point) => {
     const group = svgElement("g", { class: `endpoint endpoint-${kind}` });
-    group.append(svgElement("circle", { cx: point.x, cy: point.y, r: 0.24 }));
+    group.append(svgElement("circle", { cx: point.x, cy: point.y, r: 0.21 }));
     svg.append(group);
   };
   addEndpoint("start", startOutside);
   addEndpoint("end", endOutside);
 
-  const startLabel = svgElement("text", { class: "outside-label start-label", x: -1.15, y: startOutside.y });
+  const labelAttributes = {
+    "dominant-baseline": "central",
+    "text-anchor": "middle",
+    "font-family": '"Noto Sans KR", "Malgun Gothic", sans-serif',
+    "font-size": 0.34,
+    "font-weight": 900,
+  };
+  const startLabel = svgElement("text", { ...labelAttributes, class: "outside-label start-label", x: -1.35, y: startOutside.y });
   startLabel.textContent = "출발";
-  const endLabel = svgElement("text", { class: "outside-label end-label", x: maze.size + 1.15, y: endOutside.y });
+  const endLabel = svgElement("text", { ...labelAttributes, class: "outside-label end-label", x: maze.size + 1.35, y: endOutside.y });
   endLabel.textContent = "도착";
   svg.append(startLabel, endLabel);
   return svg;
