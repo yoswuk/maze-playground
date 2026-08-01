@@ -239,7 +239,7 @@ button:focus-visible, input:focus-visible {
 .endpoint circle { fill: #fffef9; stroke-width: .1; }
 .endpoint-start circle { stroke: var(--teal); }
 .endpoint-end circle { stroke: var(--coral-dark); }
-.outside-label { dominant-baseline: central; text-anchor: middle; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; font-size: .36px; font-weight: 900; }
+.outside-label { dominant-baseline: central; text-anchor: middle; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; font-size: .34px; font-weight: 900; }
 .start-label { fill: var(--teal); }
 .end-label { fill: var(--coral-dark); }
 .worksheet-footer { display: flex; justify-content: space-between; gap: 16px; padding-top: 10px; border-top: 1px solid #c9cbc5; color: #69736f; font-size: clamp(7px, .95vw, 10px); }
