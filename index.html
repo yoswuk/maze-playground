@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="아이를 위한 A4 인쇄용 미로 활동지 생성기" />
     <title>미로 놀이터</title>
-    <link rel="stylesheet" href="./styles.css?v=20260801-6" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-7" />
   </head>
   <body>
     <main class="app-shell">
@@ -19,23 +19,20 @@
       </header>
 
       <div class="app-main">
-        <aside class="controls-pane" aria-label="미로 만들기 설정">
-          <section class="control-card">
-            <div class="control-heading">
-              <div>
-                <h2>미로 생성</h2>
-                <p id="difficulty-description">길이 넓고 갈림길이 적어요</p>
-              </div>
+        <section class="control-card" aria-labelledby="generator-title">
+          <div class="control-heading">
+            <div>
+              <h2 id="generator-title">미로 생성</h2>
+              <p id="difficulty-description">12×12 · 길이 넓고 갈림길이 적어요</p>
             </div>
-            <div class="choice-row difficulty-grid" aria-label="난이도 선택">
-              <button type="button" class="choice-button" data-difficulty="easy" aria-pressed="true"><span>쉬움</span><small class="difficulty-size">12×12</small></button>
-              <button type="button" class="choice-button" data-difficulty="medium" aria-pressed="false"><span>보통</span><small class="difficulty-size">18×18</small></button>
-              <button type="button" class="choice-button" data-difficulty="hard" aria-pressed="false"><span>어려움</span><small class="difficulty-size">24×24</small></button>
-              <button type="button" class="choice-button expert-choice" data-difficulty="expert" aria-pressed="false"><span>매우 어려움</span><small class="difficulty-size">30×30</small></button>
-            </div>
-          </section>
-
-        </aside>
+          </div>
+          <div class="choice-row difficulty-grid" aria-label="미로 크기와 난이도 선택">
+            <button type="button" class="choice-button" data-difficulty="easy" aria-pressed="true"><span>쉬움</span><small class="difficulty-size">12×12</small></button>
+            <button type="button" class="choice-button" data-difficulty="medium" aria-pressed="false"><span>보통</span><small class="difficulty-size">18×18</small></button>
+            <button type="button" class="choice-button" data-difficulty="hard" aria-pressed="false"><span>어려움</span><small class="difficulty-size">24×24</small></button>
+            <button type="button" class="choice-button expert-choice" data-difficulty="expert" aria-pressed="false"><span>매우 어려움</span><small class="difficulty-size">30×30</small></button>
+          </div>
+        </section>
 
         <section class="preview-pane" aria-label="활동지 미리보기">
           <div class="preview-toolbar">
@@ -52,27 +49,30 @@
             <button id="new-maze" type="button" class="new-button"><span aria-hidden="true">↻</span>새 미로 만들기</button>
           </div>
           <div class="output-panel" aria-label="인쇄와 PDF 저장">
+            <div class="output-heading">
+              <strong>출력</strong>
+              <span>인쇄는 현재 미로 1개, PDF는 입력한 개수만큼 만들어요.</span>
+            </div>
             <div class="output-buttons">
               <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄하기</button>
               <button id="save-pdf" type="button" class="pdf-button"><span aria-hidden="true">↓</span>PDF 저장</button>
             </div>
             <div class="output-options">
               <label class="pdf-count-control" for="pdf-count">
-                <span>PDF 미로 수</span>
+                <span>PDF에 넣을 미로</span>
                 <input id="pdf-count" type="number" inputmode="numeric" min="1" max="10" step="1" value="1" />
                 <em>개</em>
               </label>
               <label class="check-row output-check">
                 <input id="print-answers" type="checkbox" checked />
-                <span>정답지도 함께 출력</span>
+                <span>정답지 포함</span>
               </label>
             </div>
-            <p class="print-tip">인쇄는 현재 미로 1개, PDF는 입력한 개수만큼 만들어요.</p>
           </div>
         </section>
       </div>
     </main>
 
-    <script src="./app.js?v=20260801-6" defer></script>
+    <script src="./app.js?v=20260801-7" defer></script>
   </body>
 </html>

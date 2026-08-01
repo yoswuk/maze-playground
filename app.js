@@ -561,6 +561,10 @@ document.querySelector("#new-maze").addEventListener("click", () => {
   state.showSolution = false;
   generateAll();
   render();
+  elements.printArea.scrollIntoView({
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    block: "start",
+  });
 });
 document.querySelector("#print-maze").addEventListener("click", () => window.print());
 elements.pdfCount.addEventListener("change", normalizedPdfCount);
