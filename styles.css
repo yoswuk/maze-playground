@@ -109,9 +109,9 @@ button:focus-visible, input:focus-visible {
 }
 .output-buttons { display: block; }
 .output-buttons .print-button { width: 100%; }
-.output-options { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 18px; margin-top: 10px; }
+.output-options { display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 12px; margin-top: 10px; }
 .output-panel .output-check { margin: 0; }
-.output-count-control { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 800; }
+.output-count-control { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 800; white-space: nowrap; }
 .output-count-control input {
   width: 62px;
   height: 38px;
@@ -123,6 +123,7 @@ button:focus-visible, input:focus-visible {
   font-weight: 900;
 }
 .output-count-control em { font-style: normal; }
+.output-check { flex: 0 0 auto; white-space: nowrap; }
 
 .preview-pane { min-width: 0; }
 .solution-button { min-width: 112px; border: 1px solid rgba(25, 119, 107, .25); background: rgba(255, 254, 249, .88); color: var(--teal); padding: 0 16px; }
@@ -207,8 +208,9 @@ button:focus-visible, input:focus-visible {
   .solution-path { stroke-width: 5px; }
 }
 @media (max-width: 420px) {
-  .output-options { flex-direction: column; align-items: stretch; }
-  .output-count-control, .output-check { justify-content: center; }
+  .output-options { gap: 8px; }
+  .output-count-control { gap: 5px; }
+  .output-count-control input { width: 54px; }
   .worksheet-header h2 { font-size: 18px; }
   .worksheet-header p:not(.worksheet-kicker) { font-size: 8px; }
 }
