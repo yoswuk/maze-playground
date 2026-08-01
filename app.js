@@ -447,7 +447,7 @@ function scrollToMaze() {
 
 function normalizedOutputCount() {
   const value = Math.trunc(Number(elements.outputCount.value));
-  const count = Number.isFinite(value) ? Math.max(1, value) : 1;
+  const count = Number.isFinite(value) ? Math.min(50, Math.max(1, value)) : 1;
   elements.outputCount.value = String(count);
   return count;
 }
