@@ -109,14 +109,15 @@ button:focus-visible, input:focus-visible {
 .difficulty-size {
   display: inline-block;
   border-radius: 999px;
-  background: rgba(25, 119, 107, .09);
   padding: 2px 6px;
-  color: var(--teal);
   font-size: 10px;
   font-weight: 900;
   line-height: 1.3;
 }
-.expert-choice .difficulty-size { background: rgba(242, 109, 80, .12); color: var(--coral-dark); }
+[data-difficulty="easy"] .difficulty-size { background: #e3f5ed; color: #177a55; }
+[data-difficulty="medium"] .difficulty-size { background: #fff1c2; color: #8a6200; }
+[data-difficulty="hard"] .difficulty-size { background: #ffe4cc; color: #a8490f; }
+[data-difficulty="expert"] .difficulty-size { background: #ffdedb; color: #b52f2a; }
 .check-row { min-height: 44px; display: flex; align-items: center; gap: 10px; margin-top: 10px; color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 700; }
 .check-row input { width: 19px; height: 19px; accent-color: var(--teal); }
 
