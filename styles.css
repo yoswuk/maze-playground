@@ -120,7 +120,7 @@ button:focus-visible, input:focus-visible {
 [data-difficulty="expert"] .difficulty-size { background: #ffdedb; color: #b52f2a; }
 .check-row { min-height: 44px; display: flex; align-items: center; gap: 10px; margin-top: 10px; color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 700; }
 .check-row input { width: 19px; height: 19px; accent-color: var(--teal); }
-.solo-check { margin-top: 0; padding: 0 2px; }
+.output-check { min-height: 30px; justify-content: center; margin: 0; font-size: 12px; }
 
 .maze-lookup label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 800; }
 .lookup-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
@@ -226,7 +226,6 @@ button:focus-visible, input:focus-visible {
 .endpoint circle { fill: #fffef9; stroke-width: .1; }
 .endpoint-start circle { stroke: var(--teal); }
 .endpoint-end circle { stroke: var(--coral-dark); }
-.endpoint text { dominant-baseline: central; text-anchor: middle; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; font-size: .22px; font-weight: 900; }
 .outside-label { dominant-baseline: central; text-anchor: middle; font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; font-size: .36px; font-weight: 900; }
 .start-label { fill: var(--teal); }
 .end-label { fill: var(--coral-dark); }
