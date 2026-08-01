@@ -11,6 +11,7 @@
 }
 
 * { box-sizing: border-box; }
+.sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
 
 html { background: var(--cream); }
 
@@ -71,35 +72,20 @@ button:focus-visible, input:focus-visible {
   padding: 12px;
   box-shadow: 0 12px 36px rgba(48, 63, 58, .06);
 }
-.choice-row { display: grid; gap: 8px; }
-.difficulty-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.choice-button {
-  min-height: 46px;
-  border: 1px solid var(--line);
-  border-radius: 13px;
-  background: #fff;
-  padding: 8px 10px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 800;
-  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
-}
-.choice-button:hover { transform: translateY(-1px); border-color: rgba(25, 119, 107, .42); }
-.choice-button:active, .new-button:active, .print-button:active, .pdf-button:active { transform: translateY(2px); }
-.choice-button[aria-pressed="true"] { border-color: var(--teal); background: var(--teal-soft); color: #115c53; box-shadow: inset 0 0 0 1px var(--teal); }
-.difficulty-grid .choice-button { display: flex; align-items: center; justify-content: center; gap: 6px; }
-.difficulty-size {
-  display: inline-block;
-  border-radius: 999px;
-  padding: 2px 6px;
-  font-size: 10px;
-  font-weight: 900;
-  line-height: 1.3;
-}
-[data-difficulty="easy"] .difficulty-size { background: #e3f5ed; color: #177a55; }
-[data-difficulty="medium"] .difficulty-size { background: #fff1c2; color: #8a6200; }
-[data-difficulty="hard"] .difficulty-size { background: #ffe4cc; color: #a8490f; }
-[data-difficulty="expert"] .difficulty-size { background: #ffdedb; color: #b52f2a; }
+.difficulty-slider-control { padding: 2px 7px 0; }
+.difficulty-slider-control input { --difficulty-progress: 0%; width: 100%; height: 30px; margin: 0; appearance: none; background: transparent; cursor: pointer; }
+.difficulty-slider-control input::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: linear-gradient(90deg, var(--teal) 0 var(--difficulty-progress), #d8d6cc var(--difficulty-progress) 100%); }
+.difficulty-slider-control input::-moz-range-track { height: 8px; border-radius: 999px; background: #d8d6cc; }
+.difficulty-slider-control input::-moz-range-progress { height: 8px; border-radius: 999px; background: var(--teal); }
+.difficulty-slider-control input::-webkit-slider-thumb { width: 24px; height: 24px; margin-top: -8px; appearance: none; border: 4px solid white; border-radius: 50%; background: var(--coral); box-shadow: 0 2px 8px rgba(24, 51, 47, .28); }
+.difficulty-slider-control input::-moz-range-thumb { width: 16px; height: 16px; border: 4px solid white; border-radius: 50%; background: var(--coral); box-shadow: 0 2px 8px rgba(24, 51, 47, .28); }
+.difficulty-scale { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1px; }
+.difficulty-scale span { color: #858b87; font-size: 11px; font-weight: 800; line-height: 1.25; text-align: center; transition: color 150ms ease; }
+.difficulty-scale span:first-child { text-align: left; }
+.difficulty-scale span:last-child { text-align: right; }
+.difficulty-scale span[data-active="true"] { color: var(--teal); }
+.difficulty-scale small { display: block; margin-top: 2px; font-size: 9px; font-weight: 800; }
+.new-button:active, .print-button:active, .pdf-button:active { transform: translateY(2px); }
 .check-row { min-height: 44px; display: flex; align-items: center; gap: 10px; margin-top: 10px; color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 700; }
 .check-row input { width: 19px; height: 19px; accent-color: var(--teal); }
 .output-check { min-height: 30px; justify-content: center; margin: 0; font-size: 12px; }
@@ -150,7 +136,6 @@ button:focus-visible, input:focus-visible {
 .pdf-count-control em { font-style: normal; }
 
 .preview-pane { min-width: 0; }
-.preview-status { width: min(100%, 794px); display: block; margin: 0 auto 8px; color: var(--muted); font-size: 12px; font-weight: 700; }
 .solution-button { min-width: 112px; border: 1px solid rgba(25, 119, 107, .25); background: rgba(255, 254, 249, .88); color: var(--teal); padding: 0 16px; }
 .solution-button[aria-pressed="true"] { background: var(--teal); color: white; }
 
@@ -250,13 +235,9 @@ button:focus-visible, input:focus-visible {
   .app-header span { margin-top: 4px; font-size: 12px; line-height: 1.4; }
   .app-main { gap: 16px; }
   .maze-controls { margin-top: 8px; border-radius: 16px; padding: 9px; }
-  .choice-row { gap: 7px; }
-  .difficulty-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .choice-button { min-height: 48px; padding: 7px 6px; font-size: 12px; }
-  .difficulty-size { font-size: 9px; }
+  .difficulty-slider-control { padding-inline: 5px; }
   .maze-actions { margin-top: 8px; gap: 8px; }
   .maze-actions button, .output-buttons button { min-height: 48px; }
-  .preview-status { margin-bottom: 6px; font-size: 11px; }
   .solution-button { min-width: 96px; min-height: 44px; padding: 0 12px; }
   .preview-stage { min-height: 0; border-radius: 18px; padding: 8px; }
   .worksheet-page { padding: 14px; box-shadow: 0 14px 34px rgba(52, 58, 49, .13); }
@@ -272,7 +253,8 @@ button:focus-visible, input:focus-visible {
   .solution-path { stroke-width: 5px; }
 }
 @media (max-width: 420px) {
-  .difficulty-grid .choice-button { min-height: 56px; flex-direction: column; gap: 3px; }
+  .difficulty-scale span { font-size: 10px; }
+  .difficulty-scale small { font-size: 8px; }
   .output-options { flex-direction: column; align-items: stretch; }
   .output-heading { display: block; }
   .output-heading span { display: block; margin-top: 2px; text-align: left; }
@@ -291,7 +273,7 @@ button:focus-visible, input:focus-visible {
 @media print {
   html, body { width: 210mm; margin: 0 !important; background: white !important; }
   .app-shell { min-height: 0; padding: 0; }
-  .app-header, .preview-status, .maze-controls, .output-panel { display: none !important; }
+  .app-header, .maze-controls, .output-panel { display: none !important; }
   .app-main, .preview-pane, .preview-stage, .print-area { display: block; width: auto; margin: 0; padding: 0; border: 0; background: white; overflow: visible; }
   .worksheet-page { width: 190mm; height: 277mm; min-height: 277mm; max-width: none; aspect-ratio: auto; margin: 0; padding: 8mm 8mm 6mm; border: 0; box-shadow: none; break-after: page; page-break-after: always; }
   .worksheet-page:last-child { break-after: auto; page-break-after: auto; }

@@ -3,12 +3,12 @@
 const NS = "http://www.w3.org/2000/svg";
 const DIFFICULTIES = {
   easy: {
-    label: "쉬움", size: 12, newestChance: 0.96, straightChance: 0.68, candidateCount: 12,
-    targets: { detour: 2.4, deadEnds: 0.08, turns: 0.24, decisions: 0.08, decoyDepth: 8, nearGoalTrap: 12, longestStraight: 0.20 },
+    label: "쉬움", size: 12, newestChance: 0.92, straightChance: 0.55, candidateCount: 14,
+    targets: { detour: 2.8, deadEnds: 0.11, turns: 0.34, decisions: 0.14, decoyDepth: 8, nearGoalTrap: 11, longestStraight: 0.14 },
   },
   medium: {
-    label: "보통", size: 18, newestChance: 0.82, straightChance: 0.35, candidateCount: 14,
-    targets: { detour: 3.3, deadEnds: 0.13, turns: 0.38, decisions: 0.13, decoyDepth: 7.5, nearGoalTrap: 10, longestStraight: 0.12 },
+    label: "보통", size: 18, newestChance: 0.90, straightChance: 0.52, candidateCount: 18,
+    targets: { detour: 3.0, deadEnds: 0.12, turns: 0.38, decisions: 0.15, decoyDepth: 6.5, nearGoalTrap: 8, longestStraight: 0.12 },
   },
   hard: {
     label: "어려움", size: 24, newestChance: 0.68, straightChance: 0.14, candidateCount: 16,
@@ -25,6 +25,7 @@ const DIRS = [
   { dr: 1, dc: 0 },
   { dr: 0, dc: -1 },
 ];
+const DIFFICULTY_KEYS = ["easy", "medium", "hard", "expert"];
 const PDF_LIBRARY_URLS = {
   html2canvas: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
   jspdf: "https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js",
@@ -45,6 +46,7 @@ const elements = {
   printAnswers: document.querySelector("#print-answers"),
   pdfCount: document.querySelector("#pdf-count"),
   savePdf: document.querySelector("#save-pdf"),
+  difficultySlider: document.querySelector("#difficulty-slider"),
 };
 
 function hashText(value) {
@@ -416,9 +418,14 @@ function generateAll() {
   state.mazes = [generateMaze(state.difficulty, mazeSeed)];
 }
 
-function syncDifficultyButtons() {
-  document.querySelectorAll("[data-difficulty]").forEach((button) => {
-    button.setAttribute("aria-pressed", String(button.dataset.difficulty === state.difficulty));
+function syncDifficultySlider() {
+  const index = DIFFICULTY_KEYS.indexOf(state.difficulty);
+  const config = DIFFICULTIES[state.difficulty];
+  elements.difficultySlider.value = String(index);
+  elements.difficultySlider.style.setProperty("--difficulty-progress", `${index / (DIFFICULTY_KEYS.length - 1) * 100}%`);
+  elements.difficultySlider.setAttribute("aria-valuetext", `${config.label} ${config.size}×${config.size}`);
+  document.querySelectorAll("[data-difficulty-label]").forEach((label) => {
+    label.dataset.active = String(label.dataset.difficultyLabel === state.difficulty);
   });
 }
 
@@ -430,7 +437,7 @@ function render() {
   elements.status.textContent = `${config.label} ${config.size}×${config.size} 미로가 준비됐어요`;
   elements.toggleSolution.textContent = state.showSolution ? "정답 숨기기" : "정답 보기";
   elements.toggleSolution.setAttribute("aria-pressed", String(state.showSolution));
-  syncDifficultyButtons();
+  syncDifficultySlider();
 }
 
 function scrollToMaze() {
@@ -538,14 +545,15 @@ async function saveCurrentMazeAsPdf(count) {
   }
 }
 
-document.querySelectorAll("[data-difficulty]").forEach((button) => {
-  button.addEventListener("click", () => {
-    state.difficulty = button.dataset.difficulty;
-    state.showSolution = false;
-    generateAll();
-    render();
-    scrollToMaze();
-  });
+elements.difficultySlider.addEventListener("input", () => {
+  state.difficulty = DIFFICULTY_KEYS[Number(elements.difficultySlider.value)];
+  syncDifficultySlider();
+});
+elements.difficultySlider.addEventListener("change", () => {
+  state.showSolution = false;
+  generateAll();
+  render();
+  scrollToMaze();
 });
 
 elements.printAnswers.addEventListener("change", () => {
