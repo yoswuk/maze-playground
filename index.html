@@ -24,7 +24,7 @@
             <div class="control-heading">
               <span>1</span>
               <div>
-                <h2>난이도</h2>
+                <h2>미로 생성</h2>
                 <p id="difficulty-description">길이 넓고 갈림길이 적어요</p>
               </div>
             </div>
@@ -33,6 +33,9 @@
               <button type="button" class="choice-button" data-difficulty="medium" aria-pressed="false"><span>보통</span><small class="difficulty-size">16×16</small></button>
               <button type="button" class="choice-button" data-difficulty="hard" aria-pressed="false"><span>어려움</span><small class="difficulty-size">24×24</small></button>
               <button type="button" class="choice-button expert-choice" data-difficulty="expert" aria-pressed="false"><span>매우 어려움</span><small class="difficulty-size">32×32</small></button>
+            </div>
+            <div class="new-maze-action">
+              <button id="new-maze" type="button" class="new-button"><span aria-hidden="true">↻</span>새 미로 만들기</button>
             </div>
           </section>
 
@@ -54,9 +57,6 @@
             </form>
           </section>
 
-          <div class="primary-actions">
-            <button id="new-maze" type="button" class="new-button"><span aria-hidden="true">↻</span>새 미로 만들기</button>
-          </div>
         </aside>
 
         <section class="preview-pane" aria-label="활동지 미리보기">
