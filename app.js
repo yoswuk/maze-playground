@@ -29,9 +29,6 @@ const DIRS = [
   { dr: 1, dc: 0 },
   { dr: 0, dc: -1 },
 ];
-const DIFFICULTY_NUMBERS = { easy: "1", medium: "2", hard: "3", expert: "4" };
-const NUMBER_DIFFICULTIES = Object.fromEntries(Object.entries(DIFFICULTY_NUMBERS).map(([key, value]) => [value, key]));
-const MAX_MAZE_SEED = 0xffffff;
 const PDF_LIBRARY_URLS = {
   html2canvas: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
   jspdf: "https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js",
@@ -51,9 +48,6 @@ const elements = {
   difficultyDescription: document.querySelector("#difficulty-description"),
   toggleSolution: document.querySelector("#toggle-solution"),
   printAnswers: document.querySelector("#print-answers"),
-  lookupForm: document.querySelector("#maze-lookup"),
-  mazeNumber: document.querySelector("#maze-number"),
-  lookupMessage: document.querySelector("#lookup-message"),
   savePdf: document.querySelector("#save-pdf"),
 };
 
@@ -64,33 +58,6 @@ function hashText(value) {
     hash = Math.imul(hash, 16777619);
   }
   return hash >>> 0;
-}
-
-function mazeChecksum(difficulty, seed) {
-  return hashText(`${DIFFICULTY_NUMBERS[difficulty]}:${seed}:maze-playground`) % 97;
-}
-
-function formatMazeNumber(difficulty, seed) {
-  const safeSeed = seed & MAX_MAZE_SEED;
-  const seedText = String(safeSeed).padStart(8, "0");
-  const checksum = String(mazeChecksum(difficulty, safeSeed)).padStart(2, "0");
-  return `${DIFFICULTY_NUMBERS[difficulty]}-${seedText}-${checksum}`;
-}
-
-function parseMazeNumber(value) {
-  const raw = value.trim();
-  if (/[^0-9\s-]/.test(raw)) throw new Error("숫자와 하이픈만 입력해 주세요.");
-  const digits = raw.replace(/\D/g, "");
-  if (digits.length !== 11) throw new Error("미로 번호 11자리를 확인해 주세요.");
-
-  const difficulty = NUMBER_DIFFICULTIES[digits[0]];
-  if (!difficulty) throw new Error("첫 숫자는 1부터 4까지여야 해요.");
-  const seed = Number(digits.slice(1, 9));
-  if (!Number.isInteger(seed) || seed > MAX_MAZE_SEED) throw new Error("미로 번호의 가운데 숫자를 확인해 주세요.");
-  const expectedChecksum = mazeChecksum(difficulty, seed);
-  if (Number(digits.slice(9)) !== expectedChecksum) throw new Error("미로 번호가 맞지 않아요. 다시 확인해 주세요.");
-
-  return { difficulty, seed, number: formatMazeNumber(difficulty, seed) };
 }
 
 function makeRandom(seed) {
@@ -294,7 +261,7 @@ function buildCandidate(config, seed) {
   };
 }
 
-function generateMaze(difficulty, seed, id) {
+function generateMaze(difficulty, seed) {
   const config = DIFFICULTIES[difficulty];
   let best = null;
 
@@ -304,10 +271,7 @@ function generateMaze(difficulty, seed, id) {
     if (!best || candidate.quality > best.quality) best = candidate;
   }
 
-  return {
-    ...best,
-    id,
-  };
+  return best;
 }
 
 function svgElement(name, attributes = {}) {
@@ -415,15 +379,15 @@ function worksheetPage(mazes, answer) {
   page.append(grid);
   const footer = document.createElement("footer");
   footer.className = "worksheet-footer";
-  footer.innerHTML = `<span>천천히 보고, 막히면 다른 길을 찾아봐요.</span><span>미로 번호 ${mazes[0].id}</span>`;
+  const config = DIFFICULTIES[state.difficulty];
+  footer.innerHTML = `<span>천천히 보고, 막히면 다른 길을 찾아봐요.</span><span>${config.label} · ${config.size}×${config.size}</span>`;
   page.append(footer);
   return page;
 }
 
 function generateAll() {
-  const mazeSeed = hashText(`${state.seed}-${state.difficulty}`) & MAX_MAZE_SEED;
-  const mazeNumber = formatMazeNumber(state.difficulty, mazeSeed);
-  state.mazes = [generateMaze(state.difficulty, mazeSeed, mazeNumber)];
+  const mazeSeed = hashText(`${state.seed}-${state.difficulty}`);
+  state.mazes = [generateMaze(state.difficulty, mazeSeed)];
 }
 
 function syncDifficultyButtons() {
@@ -436,16 +400,12 @@ function render() {
   elements.printArea.replaceChildren();
   elements.printArea.append(worksheetPage(state.mazes, false));
   if (state.printAnswers) elements.printArea.append(worksheetPage(state.mazes, true));
-  elements.status.textContent = `미로 ${state.mazes[0].id}가 준비됐어요`;
+  const config = DIFFICULTIES[state.difficulty];
+  elements.status.textContent = `${config.label} ${config.size}×${config.size} 미로가 준비됐어요`;
   elements.difficultyDescription.textContent = DIFFICULTIES[state.difficulty].description;
   elements.toggleSolution.textContent = state.showSolution ? "정답 숨기기" : "정답 보기";
   elements.toggleSolution.setAttribute("aria-pressed", String(state.showSolution));
   syncDifficultyButtons();
-}
-
-function setLookupMessage(message, error = false) {
-  elements.lookupMessage.textContent = message;
-  elements.lookupMessage.classList.toggle("is-error", error);
 }
 
 function loadExternalScript(src, isReady) {
@@ -490,6 +450,9 @@ async function saveCurrentMazeAsPdf() {
   try {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
+    const mobile = window.matchMedia("(max-width: 720px)").matches;
+    const lowMemory = Number(navigator.deviceMemory ?? 8) <= 4;
+    const captureScale = mobile ? (lowMemory ? 2 : 2.35) : 3;
 
     for (let index = 0; index < pages.length; index += 1) {
       const page = pages[index].cloneNode(true);
@@ -500,7 +463,7 @@ async function saveCurrentMazeAsPdf() {
       const canvas = await window.html2canvas(page, {
         backgroundColor: "#ffffff",
         logging: false,
-        scale: 3,
+        scale: captureScale,
         useCORS: true,
         width: 794,
         height: 1123,
@@ -513,7 +476,8 @@ async function saveCurrentMazeAsPdf() {
       canvas.height = 1;
     }
 
-    pdf.save(`miro-${state.mazes[0].id}.pdf`);
+    const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+    pdf.save(`miro-${state.difficulty}-${date}.pdf`);
   } finally {
     host.remove();
   }
@@ -536,28 +500,11 @@ elements.toggleSolution.addEventListener("click", () => {
   state.showSolution = !state.showSolution;
   render();
 });
-elements.lookupForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  try {
-    const parsed = parseMazeNumber(elements.mazeNumber.value);
-    state.difficulty = parsed.difficulty;
-    state.seed = parsed.seed;
-    state.showSolution = false;
-    state.mazes = [generateMaze(parsed.difficulty, parsed.seed, parsed.number)];
-    elements.mazeNumber.value = parsed.number;
-    render();
-    setLookupMessage("같은 미로를 불러왔어요.");
-  } catch (error) {
-    setLookupMessage(error.message, true);
-  }
-});
 document.querySelector("#new-maze").addEventListener("click", () => {
   const random = new Uint32Array(1);
   crypto.getRandomValues(random);
-  state.seed = random[0] & MAX_MAZE_SEED;
+  state.seed = random[0];
   state.showSolution = false;
-  elements.mazeNumber.value = "";
-  setLookupMessage("");
   generateAll();
   render();
 });
