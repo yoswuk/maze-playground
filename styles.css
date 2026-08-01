@@ -71,11 +71,6 @@ button:focus-visible, input:focus-visible {
   padding: 16px 18px 18px;
   box-shadow: 0 12px 36px rgba(48, 63, 58, .06);
 }
-.control-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-.control-heading h2, .control-heading p { margin: 0; }
-.control-heading h2 { font-size: 16px; font-weight: 900; }
-.control-heading p { margin-top: 2px; color: var(--muted); font-size: 12px; }
-
 .choice-row { display: grid; gap: 8px; }
 .difficulty-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .choice-button {
@@ -109,8 +104,8 @@ button:focus-visible, input:focus-visible {
 .check-row input { width: 19px; height: 19px; accent-color: var(--teal); }
 .output-check { min-height: 30px; justify-content: center; margin: 0; font-size: 12px; }
 
-.new-maze-action { width: min(100%, 400px); margin: 16px auto 0; }
-.new-maze-action button, .output-buttons button, .solution-button {
+.maze-actions { width: min(100%, 794px); display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 16px auto 0; }
+.maze-actions button, .output-buttons button {
   min-height: 50px;
   border: 0;
   border-radius: 15px;
@@ -155,10 +150,7 @@ button:focus-visible, input:focus-visible {
 .pdf-count-control em { font-style: normal; }
 
 .preview-pane { min-width: 0; }
-.preview-toolbar { width: min(100%, 794px); min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 auto 12px; }
-.preview-toolbar p, .preview-toolbar span { margin: 0; }
-.preview-toolbar p { font-size: 16px; font-weight: 900; }
-.preview-toolbar span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+.preview-status { width: min(100%, 794px); display: block; margin: 0 auto 8px; color: var(--muted); font-size: 12px; font-weight: 700; }
 .solution-button { min-width: 112px; border: 1px solid rgba(25, 119, 107, .25); background: rgba(255, 254, 249, .88); color: var(--teal); padding: 0 16px; }
 .solution-button[aria-pressed="true"] { background: var(--teal); color: white; }
 
@@ -258,18 +250,13 @@ button:focus-visible, input:focus-visible {
   .app-header span { margin-top: 4px; font-size: 12px; line-height: 1.4; }
   .app-main { gap: 16px; }
   .control-card { margin-bottom: 14px; border-radius: 18px; padding: 14px; }
-  .control-heading { margin-bottom: 10px; }
-  .control-heading h2 { font-size: 15px; }
-  .control-heading p { font-size: 11px; }
   .choice-row { gap: 7px; }
   .difficulty-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .choice-button { min-height: 48px; padding: 7px 6px; font-size: 12px; }
   .difficulty-size { font-size: 9px; }
-  .new-maze-action { width: 100%; margin-top: 10px; }
-  .new-maze-action button, .output-buttons button { min-height: 48px; }
-  .preview-toolbar { min-height: 46px; margin-bottom: 8px; gap: 10px; }
-  .preview-toolbar p { font-size: 15px; }
-  .preview-toolbar span { font-size: 11px; }
+  .maze-actions { width: 100%; margin-top: 10px; gap: 8px; }
+  .maze-actions button, .output-buttons button { min-height: 48px; }
+  .preview-status { margin-bottom: 6px; font-size: 11px; }
   .solution-button { min-width: 96px; min-height: 44px; padding: 0 12px; }
   .preview-stage { min-height: 0; border-radius: 18px; padding: 8px; }
   .worksheet-page { padding: 14px; box-shadow: 0 14px 34px rgba(52, 58, 49, .13); }
@@ -304,7 +291,7 @@ button:focus-visible, input:focus-visible {
 @media print {
   html, body { width: 210mm; margin: 0 !important; background: white !important; }
   .app-shell { min-height: 0; padding: 0; }
-  .app-header, .control-card, .preview-toolbar, .new-maze-action, .output-panel { display: none !important; }
+  .app-header, .control-card, .preview-status, .maze-actions, .output-panel { display: none !important; }
   .app-main, .preview-pane, .preview-stage, .print-area { display: block; width: auto; margin: 0; padding: 0; border: 0; background: white; overflow: visible; }
   .worksheet-page { width: 190mm; height: 277mm; min-height: 277mm; max-width: none; aspect-ratio: auto; margin: 0; padding: 8mm 8mm 6mm; border: 0; box-shadow: none; break-after: page; page-break-after: always; }
   .worksheet-page:last-child { break-after: auto; page-break-after: auto; }

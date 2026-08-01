@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="아이를 위한 A4 인쇄용 미로 활동지 생성기" />
     <title>미로 놀이터</title>
-    <link rel="stylesheet" href="./styles.css?v=20260801-7" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-9" />
   </head>
   <body>
     <main class="app-shell">
@@ -19,13 +19,7 @@
       </header>
 
       <div class="app-main">
-        <section class="control-card" aria-labelledby="generator-title">
-          <div class="control-heading">
-            <div>
-              <h2 id="generator-title">미로 생성</h2>
-              <p id="difficulty-description">12×12 · 길이 넓고 갈림길이 적어요</p>
-            </div>
-          </div>
+        <section class="control-card" aria-label="미로 크기와 난이도 선택">
           <div class="choice-row difficulty-grid" aria-label="미로 크기와 난이도 선택">
             <button type="button" class="choice-button" data-difficulty="easy" aria-pressed="true"><span>쉬움</span><small class="difficulty-size">12×12</small></button>
             <button type="button" class="choice-button" data-difficulty="medium" aria-pressed="false"><span>보통</span><small class="difficulty-size">18×18</small></button>
@@ -35,17 +29,12 @@
         </section>
 
         <section class="preview-pane" aria-label="활동지 미리보기">
-          <div class="preview-toolbar">
-            <div>
-              <p>활동지 미리보기</p>
-              <span id="status" aria-live="polite">새 미로가 준비됐어요</span>
-            </div>
-            <button id="toggle-solution" type="button" class="solution-button" aria-pressed="false">정답 보기</button>
-          </div>
+          <span id="status" class="preview-status" aria-live="polite">새 미로가 준비됐어요</span>
           <div class="preview-stage">
             <div id="print-area" class="print-area"></div>
           </div>
-          <div class="new-maze-action">
+          <div class="maze-actions" aria-label="미로 조작">
+            <button id="toggle-solution" type="button" class="solution-button" aria-pressed="false">정답 보기</button>
             <button id="new-maze" type="button" class="new-button"><span aria-hidden="true">↻</span>새 미로 만들기</button>
           </div>
           <div class="output-panel" aria-label="인쇄와 PDF 저장">
@@ -73,6 +62,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260801-7" defer></script>
+    <script src="./app.js?v=20260801-8" defer></script>
   </body>
 </html>

@@ -5,22 +5,18 @@ const DIFFICULTIES = {
   easy: {
     label: "쉬움", size: 12, newestChance: 0.96, straightChance: 0.68, candidateCount: 12,
     targets: { detour: 2.4, deadEnds: 0.08, turns: 0.24, decisions: 0.08, decoyDepth: 8, nearGoalTrap: 12, longestStraight: 0.20 },
-    description: "12×12 · 길이 넓고 갈림길이 적어요",
   },
   medium: {
     label: "보통", size: 18, newestChance: 0.82, straightChance: 0.35, candidateCount: 14,
     targets: { detour: 3.3, deadEnds: 0.13, turns: 0.38, decisions: 0.13, decoyDepth: 7.5, nearGoalTrap: 10, longestStraight: 0.12 },
-    description: "18×18 · 적당한 갈림길과 우회로가 있어요",
   },
   hard: {
     label: "어려움", size: 24, newestChance: 0.68, straightChance: 0.14, candidateCount: 16,
     targets: { detour: 4.4, deadEnds: 0.17, turns: 0.49, decisions: 0.18, decoyDepth: 5.5, nearGoalTrap: 6, longestStraight: 0.08 },
-    description: "24×24 · 긴 정답 길과 헷갈리는 막다른 길이 많아요",
   },
   expert: {
     label: "매우 어려움", size: 30, newestChance: 0.58, straightChance: 0.06, candidateCount: 20,
     targets: { detour: 5.4, deadEnds: 0.20, turns: 0.56, decisions: 0.22, decoyDepth: 7, nearGoalTrap: 9, longestStraight: 0.06 },
-    description: "30×30 · 길고 촘촘한 최고난도 미로예요",
   },
 };
 const DIRS = [
@@ -45,7 +41,6 @@ const state = {
 const elements = {
   printArea: document.querySelector("#print-area"),
   status: document.querySelector("#status"),
-  difficultyDescription: document.querySelector("#difficulty-description"),
   toggleSolution: document.querySelector("#toggle-solution"),
   printAnswers: document.querySelector("#print-answers"),
   pdfCount: document.querySelector("#pdf-count"),
@@ -433,7 +428,6 @@ function render() {
   if (state.printAnswers) elements.printArea.append(worksheetPage(state.mazes, true));
   const config = DIFFICULTIES[state.difficulty];
   elements.status.textContent = `${config.label} ${config.size}×${config.size} 미로가 준비됐어요`;
-  elements.difficultyDescription.textContent = DIFFICULTIES[state.difficulty].description;
   elements.toggleSolution.textContent = state.showSolution ? "정답 숨기기" : "정답 보기";
   elements.toggleSolution.setAttribute("aria-pressed", String(state.showSolution));
   syncDifficultyButtons();
