@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="아이를 위한 A4 인쇄용 미로 활동지 생성기" />
     <title>미로 놀이터</title>
-    <link rel="stylesheet" href="./styles.css?v=20260801-3" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-5" />
   </head>
   <body>
     <main class="app-shell">
@@ -56,16 +56,23 @@
               <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄하기</button>
               <button id="save-pdf" type="button" class="pdf-button"><span aria-hidden="true">↓</span>PDF 저장</button>
             </div>
-            <label class="check-row output-check">
-              <input id="print-answers" type="checkbox" checked />
-              <span>정답지도 함께 출력</span>
-            </label>
-            <p class="print-tip">인쇄는 <b>A4·100%</b>를 권장해요. PDF는 현재 기기에서 직접 만들어요.</p>
+            <div class="output-options">
+              <label class="pdf-count-control" for="pdf-count">
+                <span>PDF 미로 수</span>
+                <input id="pdf-count" type="number" inputmode="numeric" min="1" max="10" step="1" value="1" />
+                <em>개</em>
+              </label>
+              <label class="check-row output-check">
+                <input id="print-answers" type="checkbox" checked />
+                <span>정답지도 함께 출력</span>
+              </label>
+            </div>
+            <p class="print-tip">인쇄는 현재 미로 1개, PDF는 입력한 개수만큼 만들어요.</p>
           </div>
         </section>
       </div>
     </main>
 
-    <script src="./app.js?v=20260801-4" defer></script>
+    <script src="./app.js?v=20260801-5" defer></script>
   </body>
 </html>
