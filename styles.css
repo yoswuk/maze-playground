@@ -151,8 +151,8 @@ button:focus-visible, input:focus-visible {
 .lookup-message { min-height: 16px; margin: 6px 2px 0; color: var(--muted); font-size: 10px; line-height: 1.4; }
 .lookup-message.is-error { color: #b52f2a; }
 
-.primary-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-.primary-actions button, .solution-button {
+.primary-actions { display: block; }
+.primary-actions button, .output-buttons button, .solution-button {
   min-height: 50px;
   border: 0;
   border-radius: 15px;
@@ -162,13 +162,25 @@ button:focus-visible, input:focus-visible {
 }
 .new-button { background: var(--coral); color: white; box-shadow: 0 7px 0 rgba(217, 79, 53, .15); }
 .new-button:hover { background: var(--coral-dark); }
-.new-button { grid-column: 1 / -1; }
+.new-button { width: 100%; }
 .print-button { background: var(--ink); color: white; box-shadow: 0 7px 0 rgba(24, 51, 47, .13); }
 .pdf-button { background: var(--teal); color: white; box-shadow: 0 7px 0 rgba(25, 119, 107, .14); }
 .pdf-button:hover { background: #115f56; }
 .pdf-button:disabled { cursor: wait; opacity: .65; }
 .new-button span, .print-button span, .pdf-button span { margin-right: 5px; font-size: 18px; }
 .print-tip { margin: 4px 4px 0; color: var(--muted); font-size: 11px; line-height: 1.55; text-align: center; }
+
+.output-panel {
+  width: min(100%, 794px);
+  margin: 16px auto 0;
+  border: 1px solid rgba(24, 51, 47, .1);
+  border-radius: 20px;
+  background: rgba(255, 254, 249, .9);
+  padding: 14px;
+  box-shadow: 0 10px 28px rgba(48, 63, 58, .05);
+}
+.output-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.output-panel .output-check { margin-top: 9px; }
 
 .preview-pane { min-width: 0; }
 .preview-toolbar { min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
@@ -287,7 +299,7 @@ button:focus-visible, input:focus-visible {
 @media print {
   html, body { width: 210mm; margin: 0 !important; background: white !important; }
   .app-shell { min-height: 0; padding: 0; }
-  .app-header, .controls-pane, .preview-toolbar { display: none !important; }
+  .app-header, .controls-pane, .preview-toolbar, .output-panel { display: none !important; }
   .app-main, .preview-pane, .preview-stage, .print-area { display: block; width: auto; margin: 0; padding: 0; border: 0; background: white; overflow: visible; }
   .worksheet-page { width: 190mm; height: 277mm; min-height: 277mm; max-width: none; aspect-ratio: auto; margin: 0; padding: 8mm 8mm 6mm; border: 0; box-shadow: none; break-after: page; page-break-after: always; }
   .worksheet-page:last-child { break-after: auto; page-break-after: auto; }
