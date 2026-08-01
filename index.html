@@ -2,10 +2,10 @@
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="아이를 위한 A4 인쇄용 미로 활동지 생성기" />
     <title>미로 놀이터</title>
-    <link rel="stylesheet" href="./styles.css?v=20260801-2" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-3" />
   </head>
   <body>
     <main class="app-shell">
@@ -22,7 +22,6 @@
         <aside class="controls-pane" aria-label="미로 만들기 설정">
           <section class="control-card">
             <div class="control-heading">
-              <span>1</span>
               <div>
                 <h2>미로 생성</h2>
                 <p id="difficulty-description">길이 넓고 갈림길이 적어요</p>
@@ -45,30 +44,13 @@
           <div class="preview-toolbar">
             <div>
               <p>활동지 미리보기</p>
-              <span id="status" aria-live="polite">1개의 미로가 준비됐어요</span>
+              <span id="status" aria-live="polite">새 미로가 준비됐어요</span>
             </div>
             <button id="toggle-solution" type="button" class="solution-button" aria-pressed="false">정답 보기</button>
           </div>
           <div class="preview-stage">
             <div id="print-area" class="print-area"></div>
           </div>
-          <section class="control-card lookup-panel">
-            <div class="control-heading">
-              <span>2</span>
-              <div>
-                <h2>미로 다시 찾기</h2>
-                <p>활동지의 미로 번호를 입력하세요</p>
-              </div>
-            </div>
-            <form id="maze-lookup" class="maze-lookup">
-              <label for="maze-number">미로 번호</label>
-              <div class="lookup-row">
-                <input id="maze-number" name="maze-number" type="text" inputmode="numeric" autocomplete="off" maxlength="13" placeholder="1-12345678-90" aria-describedby="lookup-message" />
-                <button type="submit">불러오기</button>
-              </div>
-              <p id="lookup-message" class="lookup-message" aria-live="polite"></p>
-            </form>
-          </section>
           <div class="output-panel" aria-label="인쇄와 PDF 저장">
             <div class="output-buttons">
               <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄하기</button>
@@ -84,6 +66,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260801-2" defer></script>
+    <script src="./app.js?v=20260801-3" defer></script>
   </body>
 </html>
