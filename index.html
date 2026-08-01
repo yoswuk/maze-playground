@@ -29,9 +29,9 @@
               </div>
             </div>
             <div class="choice-row difficulty-grid" aria-label="난이도 선택">
-              <button type="button" class="choice-button" data-difficulty="easy" aria-pressed="true"><span>쉬움</span><small class="difficulty-size">12×12</small></button>
-              <button type="button" class="choice-button" data-difficulty="medium" aria-pressed="false"><span>보통</span><small class="difficulty-size">17×17</small></button>
-              <button type="button" class="choice-button" data-difficulty="hard" aria-pressed="false"><span>어려움</span><small class="difficulty-size">23×23</small></button>
+              <button type="button" class="choice-button" data-difficulty="easy" aria-pressed="true"><span>쉬움</span><small class="difficulty-size">8×8</small></button>
+              <button type="button" class="choice-button" data-difficulty="medium" aria-pressed="false"><span>보통</span><small class="difficulty-size">16×16</small></button>
+              <button type="button" class="choice-button" data-difficulty="hard" aria-pressed="false"><span>어려움</span><small class="difficulty-size">24×24</small></button>
               <button type="button" class="choice-button expert-choice" data-difficulty="expert" aria-pressed="false"><span>매우 어려움</span><small class="difficulty-size">32×32</small></button>
             </div>
           </section>
@@ -40,26 +40,41 @@
             <div class="control-heading">
               <span>2</span>
               <div>
-                <h2>종이 한 장에</h2>
-                <p>크게 하나 또는 알차게 둘</p>
+                <h2>출력 설정</h2>
+                <p>미로는 A4 한 장에 하나씩 만들어요</p>
               </div>
             </div>
-            <div class="choice-row two-columns" aria-label="페이지당 미로 수">
-              <button type="button" class="choice-button" data-per-page="1" aria-pressed="true">1개 크게</button>
-              <button type="button" class="choice-button" data-per-page="2" aria-pressed="false">2개씩</button>
-            </div>
-            <label class="check-row">
+            <label class="check-row solo-check">
               <input id="print-answers" type="checkbox" checked />
-              <span>정답지도 함께 인쇄</span>
+              <span>정답지도 함께 만들기</span>
             </label>
+          </section>
+
+          <section class="control-card">
+            <div class="control-heading">
+              <span>3</span>
+              <div>
+                <h2>미로 다시 찾기</h2>
+                <p>활동지의 미로 번호를 입력하세요</p>
+              </div>
+            </div>
+            <form id="maze-lookup" class="maze-lookup">
+              <label for="maze-number">미로 번호</label>
+              <div class="lookup-row">
+                <input id="maze-number" name="maze-number" type="text" inputmode="numeric" autocomplete="off" maxlength="13" placeholder="1-12345678-90" aria-describedby="lookup-message" />
+                <button type="submit">불러오기</button>
+              </div>
+              <p id="lookup-message" class="lookup-message" aria-live="polite"></p>
+            </form>
           </section>
 
           <div class="primary-actions">
             <button id="new-maze" type="button" class="new-button"><span aria-hidden="true">↻</span>새 미로 만들기</button>
-            <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄 · PDF 저장</button>
+            <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄하기</button>
+            <button id="save-pdf" type="button" class="pdf-button"><span aria-hidden="true">↓</span>PDF 저장</button>
           </div>
 
-          <p class="print-tip">인쇄 창에서 용지는 <b>A4</b>, 배율은 <b>100%</b>를 권장해요.</p>
+          <p class="print-tip">인쇄는 <b>A4·100%</b>를 권장해요. PDF는 현재 기기에서 직접 만들어요.</p>
         </aside>
 
         <section class="preview-pane" aria-label="활동지 미리보기">
