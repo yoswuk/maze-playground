@@ -139,7 +139,20 @@ button:focus-visible, input:focus-visible {
   box-shadow: 0 10px 28px rgba(48, 63, 58, .05);
 }
 .output-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-.output-panel .output-check { margin-top: 9px; }
+.output-options { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 18px; margin-top: 10px; }
+.output-panel .output-check { margin: 0; }
+.pdf-count-control { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 800; }
+.pdf-count-control input {
+  width: 62px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: white;
+  color: var(--ink);
+  text-align: center;
+  font-weight: 900;
+}
+.pdf-count-control em { font-style: normal; }
 
 .preview-pane { min-width: 0; }
 .preview-toolbar { min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
@@ -267,13 +280,16 @@ button:focus-visible, input:focus-visible {
   .worksheet-fields i { width: 62px; height: 9px; }
   .output-panel { margin-top: 12px; border-radius: 16px; padding: 10px; }
   .output-buttons { gap: 8px; }
-  .output-panel .output-check { min-height: 36px; margin-top: 6px; }
+  .output-options { margin-top: 8px; gap: 7px 12px; }
+  .output-panel .output-check { min-height: 36px; margin: 0; }
   .print-tip { margin-top: 2px; font-size: 10px; }
   .maze-walls { stroke-width: 2.4px; }
   .solution-path { stroke-width: 5px; }
 }
 @media (max-width: 420px) {
   .difficulty-grid .choice-button { min-height: 56px; flex-direction: column; gap: 3px; }
+  .output-options { flex-direction: column; align-items: stretch; }
+  .pdf-count-control, .output-check { justify-content: center; }
   .worksheet-header h2 { font-size: 18px; }
   .worksheet-header p:not(.worksheet-kicker) { font-size: 8px; }
 }
