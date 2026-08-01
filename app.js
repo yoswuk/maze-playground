@@ -48,6 +48,7 @@ const elements = {
   difficultyDescription: document.querySelector("#difficulty-description"),
   toggleSolution: document.querySelector("#toggle-solution"),
   printAnswers: document.querySelector("#print-answers"),
+  pdfCount: document.querySelector("#pdf-count"),
   savePdf: document.querySelector("#save-pdf"),
 };
 
@@ -271,7 +272,7 @@ function generateMaze(difficulty, seed) {
     if (!best || candidate.quality > best.quality) best = candidate;
   }
 
-  return best;
+  return { ...best, difficulty };
 }
 
 function svgElement(name, attributes = {}) {
@@ -354,7 +355,7 @@ function renderMazeSvg(maze, showSolution, answer) {
   return svg;
 }
 
-function worksheetPage(mazes, answer) {
+function worksheetPage(mazes, answer, pageNumber = null) {
   const page = document.createElement("section");
   page.className = `worksheet-page ${answer ? "answer-page" : "problem-page"} items-${mazes.length}`;
   page.innerHTML = `
@@ -372,14 +373,15 @@ function worksheetPage(mazes, answer) {
   mazes.forEach((maze, index) => {
     const panel = document.createElement("article");
     panel.className = "maze-panel";
-    panel.innerHTML = `<div class="maze-panel-title"><strong>미로 ${index + 1}</strong><span>${DIFFICULTIES[state.difficulty].label}</span></div>`;
+    const config = DIFFICULTIES[maze.difficulty];
+    panel.innerHTML = `<div class="maze-panel-title"><strong>미로 ${pageNumber ?? index + 1}</strong><span>${config.label}</span></div>`;
     panel.append(renderMazeSvg(maze, state.showSolution, answer));
     grid.append(panel);
   });
   page.append(grid);
   const footer = document.createElement("footer");
   footer.className = "worksheet-footer";
-  const config = DIFFICULTIES[state.difficulty];
+  const config = DIFFICULTIES[mazes[0].difficulty];
   footer.innerHTML = `<span>천천히 보고, 막히면 다른 길을 찾아봐요.</span><span>${config.label} · ${config.size}×${config.size}</span>`;
   page.append(footer);
   return page;
@@ -438,11 +440,33 @@ function nextFrame() {
   return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 }
 
-async function saveCurrentMazeAsPdf() {
+function normalizedPdfCount() {
+  const value = Math.trunc(Number(elements.pdfCount.value));
+  const count = Number.isFinite(value) ? Math.min(10, Math.max(1, value)) : 1;
+  elements.pdfCount.value = String(count);
+  return count;
+}
+
+function buildPdfPages(count) {
+  const difficulty = state.difficulty;
+  const mazes = [state.mazes[0]];
+  for (let index = 1; index < count; index += 1) {
+    const seed = hashText(`${state.seed}-${difficulty}-pdf-${index}`);
+    mazes.push(generateMaze(difficulty, seed));
+  }
+
+  const problemPages = mazes.map((maze, index) => worksheetPage([maze], false, index + 1));
+  const answerPages = state.printAnswers
+    ? mazes.map((maze, index) => worksheetPage([maze], true, index + 1))
+    : [];
+  return [...problemPages, ...answerPages];
+}
+
+async function saveCurrentMazeAsPdf(count) {
   await ensurePdfLibraries();
   if (document.fonts?.ready) await document.fonts.ready;
 
-  const pages = [...elements.printArea.querySelectorAll(".worksheet-page")];
+  const pages = buildPdfPages(count);
   const host = document.createElement("div");
   host.className = "pdf-capture-host";
   document.body.append(host);
@@ -455,6 +479,7 @@ async function saveCurrentMazeAsPdf() {
     const captureScale = mobile ? (lowMemory ? 2 : 2.35) : 3;
 
     for (let index = 0; index < pages.length; index += 1) {
+      elements.status.textContent = `PDF ${index + 1}/${pages.length} 페이지 만드는 중`;
       const page = pages[index].cloneNode(true);
       page.querySelectorAll(".screen-solution").forEach((element) => element.remove());
       host.replaceChildren(page);
@@ -477,7 +502,7 @@ async function saveCurrentMazeAsPdf() {
     }
 
     const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
-    pdf.save(`miro-${state.difficulty}-${date}.pdf`);
+    pdf.save(`miro-${state.difficulty}-${count}mazes-${date}.pdf`);
   } finally {
     host.remove();
   }
@@ -509,13 +534,15 @@ document.querySelector("#new-maze").addEventListener("click", () => {
   render();
 });
 document.querySelector("#print-maze").addEventListener("click", () => window.print());
+elements.pdfCount.addEventListener("change", normalizedPdfCount);
 elements.savePdf.addEventListener("click", async () => {
+  const count = normalizedPdfCount();
   const original = elements.savePdf.innerHTML;
   elements.savePdf.disabled = true;
   elements.savePdf.textContent = "PDF 만드는 중…";
-  elements.status.textContent = "PDF 파일을 만들고 있어요";
+  elements.status.textContent = `미로 ${count}개를 준비하고 있어요`;
   try {
-    await saveCurrentMazeAsPdf();
+    await saveCurrentMazeAsPdf(count);
     elements.status.textContent = "PDF 파일을 저장했어요";
   } catch (error) {
     console.error(error);
