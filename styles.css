@@ -79,13 +79,11 @@ button:focus-visible, input:focus-visible {
 .difficulty-slider-control input::-moz-range-progress { height: 8px; border-radius: 999px; background: var(--teal); }
 .difficulty-slider-control input::-webkit-slider-thumb { width: 24px; height: 24px; margin-top: -8px; appearance: none; border: 4px solid white; border-radius: 50%; background: var(--coral); box-shadow: 0 2px 8px rgba(24, 51, 47, .28); }
 .difficulty-slider-control input::-moz-range-thumb { width: 16px; height: 16px; border: 4px solid white; border-radius: 50%; background: var(--coral); box-shadow: 0 2px 8px rgba(24, 51, 47, .28); }
-.difficulty-scale { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1px; }
+.difficulty-scale { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1px; padding-inline: 12px; }
 .difficulty-scale span { color: #858b87; font-size: 11px; font-weight: 800; line-height: 1.25; text-align: center; transition: color 150ms ease; }
-.difficulty-scale span:first-child { text-align: left; }
-.difficulty-scale span:last-child { text-align: right; }
 .difficulty-scale span[data-active="true"] { color: var(--teal); }
 .difficulty-scale small { display: block; margin-top: 2px; font-size: 9px; font-weight: 800; }
-.new-button:active, .print-button:active, .pdf-button:active { transform: translateY(2px); }
+.new-button:active, .print-button:active { transform: translateY(2px); }
 .check-row { min-height: 44px; display: flex; align-items: center; gap: 10px; margin-top: 10px; color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 700; }
 .check-row input { width: 19px; height: 19px; accent-color: var(--teal); }
 .output-check { min-height: 30px; justify-content: center; margin: 0; font-size: 12px; }
@@ -103,10 +101,7 @@ button:focus-visible, input:focus-visible {
 .new-button:hover { background: var(--coral-dark); }
 .new-button { width: 100%; }
 .print-button { background: var(--ink); color: white; box-shadow: 0 7px 0 rgba(24, 51, 47, .13); }
-.pdf-button { background: var(--teal); color: white; box-shadow: 0 7px 0 rgba(25, 119, 107, .14); }
-.pdf-button:hover { background: #115f56; }
-.pdf-button:disabled { cursor: wait; opacity: .65; }
-.new-button span, .print-button span, .pdf-button span { margin-right: 5px; font-size: 18px; }
+.new-button span, .print-button span { margin-right: 5px; font-size: 18px; }
 .output-panel {
   width: min(100%, 794px);
   margin: 16px auto 0;
@@ -119,11 +114,12 @@ button:focus-visible, input:focus-visible {
 .output-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 0 2px 11px; }
 .output-heading strong { font-size: 14px; font-weight: 900; }
 .output-heading span { color: var(--muted); font-size: 11px; line-height: 1.45; text-align: right; }
-.output-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.output-buttons { display: block; }
+.output-buttons .print-button { width: 100%; }
 .output-options { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 18px; margin-top: 10px; }
 .output-panel .output-check { margin: 0; }
-.pdf-count-control { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 800; }
-.pdf-count-control input {
+.output-count-control { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 800; }
+.output-count-control input {
   width: 62px;
   height: 38px;
   border: 1px solid var(--line);
@@ -133,7 +129,7 @@ button:focus-visible, input:focus-visible {
   text-align: center;
   font-weight: 900;
 }
-.pdf-count-control em { font-style: normal; }
+.output-count-control em { font-style: normal; }
 
 .preview-pane { min-width: 0; }
 .solution-button { min-width: 112px; border: 1px solid rgba(25, 119, 107, .25); background: rgba(255, 254, 249, .88); color: var(--teal); padding: 0 16px; }
@@ -193,39 +189,6 @@ button:focus-visible, input:focus-visible {
 .end-label { fill: var(--coral-dark); }
 .worksheet-footer { display: flex; justify-content: space-between; gap: 16px; padding-top: 10px; border-top: 1px solid #c9cbc5; color: #69736f; font-size: clamp(7px, .95vw, 10px); }
 
-.pdf-capture-host {
-  position: fixed;
-  top: 0;
-  left: -10000px;
-  width: 794px;
-  background: white;
-  pointer-events: none;
-}
-.pdf-capture-host .worksheet-page {
-  width: 794px;
-  height: 1123px;
-  min-height: 1123px;
-  max-width: none;
-  aspect-ratio: auto;
-  border: 0;
-  padding: 34px;
-  box-shadow: none;
-}
-.pdf-capture-host .answer-page { display: flex; }
-.pdf-capture-host .screen-solution { display: none !important; }
-.pdf-capture-host .worksheet-header h2 { font-size: 30px; }
-.pdf-capture-host .worksheet-kicker { font-size: 11px; }
-.pdf-capture-host .worksheet-header p:not(.worksheet-kicker) { font-size: 12px; }
-.pdf-capture-host .worksheet-fields { min-width: 160px; gap: 9px 8px; font-size: 11px; }
-.pdf-capture-host .worksheet-fields i { width: 95px; height: 14px; }
-.pdf-capture-host .maze-panel { max-width: 650px; }
-.pdf-capture-host .maze-panel-title strong { font-size: 16px; }
-.pdf-capture-host .maze-panel-title span { font-size: 9px; }
-.pdf-capture-host .maze-svg { max-height: 720px; }
-.pdf-capture-host .maze-walls { stroke-width: 4px; }
-.pdf-capture-host .solution-path { stroke-width: 8px; }
-.pdf-capture-host .worksheet-footer { font-size: 10px; }
-
 @media (max-width: 720px) {
   .app-shell { padding: 16px 12px calc(34px + env(safe-area-inset-bottom)); }
   .app-header { margin-bottom: 16px; gap: 12px; }
@@ -246,7 +209,6 @@ button:focus-visible, input:focus-visible {
   .worksheet-fields i { width: 62px; height: 9px; }
   .output-panel { margin-top: 12px; border-radius: 16px; padding: 10px; }
   .output-heading { margin-bottom: 9px; }
-  .output-buttons { gap: 8px; }
   .output-options { margin-top: 8px; gap: 7px 12px; }
   .output-panel .output-check { min-height: 36px; margin: 0; }
   .maze-walls { stroke-width: 2.4px; }
@@ -258,12 +220,9 @@ button:focus-visible, input:focus-visible {
   .output-options { flex-direction: column; align-items: stretch; }
   .output-heading { display: block; }
   .output-heading span { display: block; margin-top: 2px; text-align: left; }
-  .pdf-count-control, .output-check { justify-content: center; }
+  .output-count-control, .output-check { justify-content: center; }
   .worksheet-header h2 { font-size: 18px; }
   .worksheet-header p:not(.worksheet-kicker) { font-size: 8px; }
-}
-@media (hover: none) {
-  .choice-button:hover { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }

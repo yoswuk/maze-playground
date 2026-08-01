@@ -26,10 +26,6 @@ const DIRS = [
   { dr: 0, dc: -1 },
 ];
 const DIFFICULTY_KEYS = ["easy", "medium", "hard", "expert"];
-const PDF_LIBRARY_URLS = {
-  html2canvas: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
-  jspdf: "https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js",
-};
 
 const state = {
   difficulty: "easy",
@@ -44,8 +40,8 @@ const elements = {
   status: document.querySelector("#status"),
   toggleSolution: document.querySelector("#toggle-solution"),
   printAnswers: document.querySelector("#print-answers"),
-  pdfCount: document.querySelector("#pdf-count"),
-  savePdf: document.querySelector("#save-pdf"),
+  outputCount: document.querySelector("#output-count"),
+  printMaze: document.querySelector("#print-maze"),
   difficultySlider: document.querySelector("#difficulty-slider"),
 };
 
@@ -447,48 +443,18 @@ function scrollToMaze() {
   });
 }
 
-function loadExternalScript(src, isReady) {
-  if (isReady()) return Promise.resolve();
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = src;
-    script.async = true;
-    script.addEventListener("load", () => isReady() ? resolve() : reject(new Error(`라이브러리를 불러오지 못했습니다: ${src}`)));
-    script.addEventListener("error", () => reject(new Error(`라이브러리를 불러오지 못했습니다: ${src}`)));
-    document.head.append(script);
-  });
-}
-
-let pdfLibrariesPromise = null;
-function ensurePdfLibraries() {
-  if (!pdfLibrariesPromise) {
-    pdfLibrariesPromise = Promise.all([
-      loadExternalScript(PDF_LIBRARY_URLS.html2canvas, () => typeof window.html2canvas === "function"),
-      loadExternalScript(PDF_LIBRARY_URLS.jspdf, () => typeof window.jspdf?.jsPDF === "function"),
-    ]).catch((error) => {
-      pdfLibrariesPromise = null;
-      throw error;
-    });
-  }
-  return pdfLibrariesPromise;
-}
-
-function nextFrame() {
-  return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-}
-
-function normalizedPdfCount() {
-  const value = Math.trunc(Number(elements.pdfCount.value));
-  const count = Number.isFinite(value) ? Math.min(10, Math.max(1, value)) : 1;
-  elements.pdfCount.value = String(count);
+function normalizedOutputCount() {
+  const value = Math.trunc(Number(elements.outputCount.value));
+  const count = Number.isFinite(value) ? Math.max(1, value) : 1;
+  elements.outputCount.value = String(count);
   return count;
 }
 
-function buildPdfPages(count) {
+function buildOutputPages(count) {
   const difficulty = state.difficulty;
   const mazes = [state.mazes[0]];
   for (let index = 1; index < count; index += 1) {
-    const seed = hashText(`${state.seed}-${difficulty}-pdf-${index}`);
+    const seed = hashText(`${state.seed}-${difficulty}-print-${index}`);
     mazes.push(generateMaze(difficulty, seed));
   }
 
@@ -499,50 +465,14 @@ function buildPdfPages(count) {
   return [...problemPages, ...answerPages];
 }
 
-async function saveCurrentMazeAsPdf(count) {
-  await ensurePdfLibraries();
-  if (document.fonts?.ready) await document.fonts.ready;
+function printMazes(count) {
+  const pages = buildOutputPages(count);
+  elements.printArea.replaceChildren(...pages);
+  elements.status.textContent = `미로 ${count}개를 인쇄할 준비가 됐어요`;
 
-  const pages = buildPdfPages(count);
-  const host = document.createElement("div");
-  host.className = "pdf-capture-host";
-  document.body.append(host);
-
-  try {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
-    const mobile = window.matchMedia("(max-width: 720px)").matches;
-    const lowMemory = Number(navigator.deviceMemory ?? 8) <= 4;
-    const captureScale = mobile ? (lowMemory ? 2 : 2.35) : 3;
-
-    for (let index = 0; index < pages.length; index += 1) {
-      elements.status.textContent = `PDF ${index + 1}/${pages.length} 페이지 만드는 중`;
-      const page = pages[index].cloneNode(true);
-      page.querySelectorAll(".screen-solution").forEach((element) => element.remove());
-      host.replaceChildren(page);
-      await nextFrame();
-
-      const canvas = await window.html2canvas(page, {
-        backgroundColor: "#ffffff",
-        logging: false,
-        scale: captureScale,
-        useCORS: true,
-        width: 794,
-        height: 1123,
-        windowWidth: 1440,
-        windowHeight: 1123,
-      });
-      if (index > 0) pdf.addPage("a4", "portrait");
-      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297, undefined, "FAST");
-      canvas.width = 1;
-      canvas.height = 1;
-    }
-
-    const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
-    pdf.save(`miro-${state.difficulty}-${count}mazes-${date}.pdf`);
-  } finally {
-    host.remove();
-  }
+  const restorePreview = () => render();
+  window.addEventListener("afterprint", restorePreview, { once: true });
+  requestAnimationFrame(() => window.print());
 }
 
 elements.difficultySlider.addEventListener("input", () => {
@@ -573,25 +503,8 @@ document.querySelector("#new-maze").addEventListener("click", () => {
   render();
   scrollToMaze();
 });
-document.querySelector("#print-maze").addEventListener("click", () => window.print());
-elements.pdfCount.addEventListener("change", normalizedPdfCount);
-elements.savePdf.addEventListener("click", async () => {
-  const count = normalizedPdfCount();
-  const original = elements.savePdf.innerHTML;
-  elements.savePdf.disabled = true;
-  elements.savePdf.textContent = "PDF 만드는 중…";
-  elements.status.textContent = `미로 ${count}개를 준비하고 있어요`;
-  try {
-    await saveCurrentMazeAsPdf(count);
-    elements.status.textContent = "PDF 파일을 저장했어요";
-  } catch (error) {
-    console.error(error);
-    elements.status.textContent = "PDF 저장에 실패했어요. 인터넷 연결을 확인해 주세요";
-  } finally {
-    elements.savePdf.disabled = false;
-    elements.savePdf.innerHTML = original;
-  }
-});
+elements.printMaze.addEventListener("click", () => printMazes(normalizedOutputCount()));
+elements.outputCount.addEventListener("change", normalizedOutputCount);
 
 generateAll();
 render();

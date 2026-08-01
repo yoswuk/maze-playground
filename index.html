@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="아이를 위한 A4 인쇄용 미로 활동지 생성기" />
     <title>미로 놀이터</title>
-    <link rel="stylesheet" href="./styles.css?v=20260801-11" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-13" />
   </head>
   <body>
     <main class="app-shell">
@@ -39,19 +39,18 @@
               <button id="new-maze" type="button" class="new-button"><span aria-hidden="true">↻</span>새 미로 만들기</button>
             </div>
           </div>
-          <div class="output-panel" aria-label="인쇄와 PDF 저장">
+          <div class="output-panel" aria-label="미로 인쇄">
             <div class="output-heading">
               <strong>출력</strong>
-              <span>인쇄는 현재 미로 1개, PDF는 입력한 개수만큼 만들어요.</span>
+              <span>입력한 개수만큼 미로를 만들어요.</span>
             </div>
             <div class="output-buttons">
               <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄하기</button>
-              <button id="save-pdf" type="button" class="pdf-button"><span aria-hidden="true">↓</span>PDF 저장</button>
             </div>
             <div class="output-options">
-              <label class="pdf-count-control" for="pdf-count">
-                <span>PDF에 넣을 미로</span>
-                <input id="pdf-count" type="number" inputmode="numeric" min="1" max="10" step="1" value="1" />
+              <label class="output-count-control" for="output-count">
+                <span>출력할 미로</span>
+                <input id="output-count" type="number" inputmode="numeric" min="1" step="1" value="1" />
                 <em>개</em>
               </label>
               <label class="check-row output-check">
@@ -64,6 +63,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260801-11" defer></script>
+    <script src="./app.js?v=20260801-13" defer></script>
   </body>
 </html>
