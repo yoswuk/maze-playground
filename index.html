@@ -40,20 +40,6 @@
             <div class="control-heading">
               <span>2</span>
               <div>
-                <h2>출력 설정</h2>
-                <p>미로는 A4 한 장에 하나씩 만들어요</p>
-              </div>
-            </div>
-            <label class="check-row solo-check">
-              <input id="print-answers" type="checkbox" checked />
-              <span>정답지도 함께 만들기</span>
-            </label>
-          </section>
-
-          <section class="control-card">
-            <div class="control-heading">
-              <span>3</span>
-              <div>
                 <h2>미로 다시 찾기</h2>
                 <p>활동지의 미로 번호를 입력하세요</p>
               </div>
@@ -73,6 +59,11 @@
             <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄하기</button>
             <button id="save-pdf" type="button" class="pdf-button"><span aria-hidden="true">↓</span>PDF 저장</button>
           </div>
+
+          <label class="check-row output-check">
+            <input id="print-answers" type="checkbox" checked />
+            <span>정답지도 함께 출력</span>
+          </label>
 
           <p class="print-tip">인쇄는 <b>A4·100%</b>를 권장해요. PDF는 현재 기기에서 직접 만들어요.</p>
         </aside>
