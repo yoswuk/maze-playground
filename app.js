@@ -433,6 +433,13 @@ function render() {
   syncDifficultyButtons();
 }
 
+function scrollToMaze() {
+  elements.printArea.scrollIntoView({
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    block: "start",
+  });
+}
+
 function loadExternalScript(src, isReady) {
   if (isReady()) return Promise.resolve();
   return new Promise((resolve, reject) => {
@@ -537,6 +544,7 @@ document.querySelectorAll("[data-difficulty]").forEach((button) => {
     state.showSolution = false;
     generateAll();
     render();
+    scrollToMaze();
   });
 });
 
@@ -555,10 +563,7 @@ document.querySelector("#new-maze").addEventListener("click", () => {
   state.showSolution = false;
   generateAll();
   render();
-  elements.printArea.scrollIntoView({
-    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-    block: "start",
-  });
+  scrollToMaze();
 });
 document.querySelector("#print-maze").addEventListener("click", () => window.print());
 elements.pdfCount.addEventListener("change", normalizedPdfCount);
