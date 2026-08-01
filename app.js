@@ -3,19 +3,19 @@
 const NS = "http://www.w3.org/2000/svg";
 const DIFFICULTIES = {
   easy: {
-    label: "쉬움", size: 12, newestChance: 0.92, straightChance: 0.55, candidateCount: 14,
+    label: "쉬움", color: "#2f9e68", size: 12, newestChance: 0.92, straightChance: 0.55, candidateCount: 14,
     targets: { detour: 2.8, deadEnds: 0.11, turns: 0.34, decisions: 0.14, decoyDepth: 8, nearGoalTrap: 11, longestStraight: 0.14 },
   },
   medium: {
-    label: "보통", size: 18, newestChance: 0.90, straightChance: 0.52, candidateCount: 18,
+    label: "보통", color: "#d49a16", size: 18, newestChance: 0.90, straightChance: 0.52, candidateCount: 18,
     targets: { detour: 3.0, deadEnds: 0.12, turns: 0.38, decisions: 0.15, decoyDepth: 6.5, nearGoalTrap: 8, longestStraight: 0.12 },
   },
   hard: {
-    label: "어려움", size: 24, newestChance: 0.68, straightChance: 0.14, candidateCount: 16,
+    label: "어려움", color: "#e87532", size: 24, newestChance: 0.68, straightChance: 0.14, candidateCount: 16,
     targets: { detour: 4.4, deadEnds: 0.17, turns: 0.49, decisions: 0.18, decoyDepth: 5.5, nearGoalTrap: 6, longestStraight: 0.08 },
   },
   expert: {
-    label: "매우 어려움", size: 30, newestChance: 0.58, straightChance: 0.06, candidateCount: 20,
+    label: "매우 어려움", color: "#d64b45", size: 30, newestChance: 0.58, straightChance: 0.06, candidateCount: 20,
     targets: { detour: 5.4, deadEnds: 0.20, turns: 0.56, decisions: 0.22, decoyDepth: 7, nearGoalTrap: 9, longestStraight: 0.06 },
   },
 };
@@ -419,7 +419,12 @@ function syncDifficultySlider() {
   const config = DIFFICULTIES[state.difficulty];
   elements.difficultySlider.value = String(index);
   elements.difficultySlider.style.setProperty("--difficulty-progress", `${index / (DIFFICULTY_KEYS.length - 1) * 100}%`);
+  elements.difficultySlider.style.setProperty("--difficulty-color", config.color);
+  document.querySelector(".difficulty-ticks").style.setProperty("--difficulty-color", config.color);
   elements.difficultySlider.setAttribute("aria-valuetext", `${config.label} ${config.size}×${config.size}`);
+  document.querySelectorAll("[data-difficulty-tick]").forEach((tick) => {
+    tick.dataset.active = String(Number(tick.dataset.difficultyTick) === index);
+  });
 }
 
 function render() {
