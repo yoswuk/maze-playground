@@ -317,7 +317,7 @@ function svgElement(name, attributes = {}) {
 }
 
 function renderMazeSvg(maze, showSolution, answer) {
-  const padding = 1.55;
+  const padding = 1.7;
   const svg = svgElement("svg", {
     class: "maze-svg",
     viewBox: `${-padding} ${-padding} ${maze.size + padding * 2} ${maze.size + padding * 2}`,
@@ -352,8 +352,8 @@ function renderMazeSvg(maze, showSolution, answer) {
   }
   svg.append(walls);
 
-  const startOutside = { x: -0.36, y: maze.start.row + 0.5 };
-  const endOutside = { x: maze.size + 0.36, y: maze.end.row + 0.5 };
+  const startOutside = { x: -0.32, y: maze.start.row + 0.5 };
+  const endOutside = { x: maze.size + 0.32, y: maze.end.row + 0.5 };
   if (showSolution || answer) {
     const points = [
       `${startOutside.x},${startOutside.y}`,
@@ -367,20 +367,17 @@ function renderMazeSvg(maze, showSolution, answer) {
     }));
   }
 
-  const addEndpoint = (kind, point, text) => {
+  const addEndpoint = (kind, point) => {
     const group = svgElement("g", { class: `endpoint endpoint-${kind}` });
-    group.append(svgElement("circle", { cx: point.x, cy: point.y, r: 0.3 }));
-    const label = svgElement("text", { x: point.x, y: point.y });
-    label.textContent = text;
-    group.append(label);
+    group.append(svgElement("circle", { cx: point.x, cy: point.y, r: 0.24 }));
     svg.append(group);
   };
-  addEndpoint("start", startOutside, "출");
-  addEndpoint("end", endOutside, "끝");
+  addEndpoint("start", startOutside);
+  addEndpoint("end", endOutside);
 
-  const startLabel = svgElement("text", { class: "outside-label start-label", x: -0.84, y: startOutside.y });
+  const startLabel = svgElement("text", { class: "outside-label start-label", x: -1.15, y: startOutside.y });
   startLabel.textContent = "출발";
-  const endLabel = svgElement("text", { class: "outside-label end-label", x: maze.size + 0.84, y: endOutside.y });
+  const endLabel = svgElement("text", { class: "outside-label end-label", x: maze.size + 1.15, y: endOutside.y });
   endLabel.textContent = "도착";
   svg.append(startLabel, endLabel);
   return svg;
