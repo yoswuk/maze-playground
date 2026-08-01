@@ -39,7 +39,20 @@
             </div>
           </section>
 
-          <section class="control-card">
+        </aside>
+
+        <section class="preview-pane" aria-label="활동지 미리보기">
+          <div class="preview-toolbar">
+            <div>
+              <p>활동지 미리보기</p>
+              <span id="status" aria-live="polite">1개의 미로가 준비됐어요</span>
+            </div>
+            <button id="toggle-solution" type="button" class="solution-button" aria-pressed="false">정답 보기</button>
+          </div>
+          <div class="preview-stage">
+            <div id="print-area" class="print-area"></div>
+          </div>
+          <section class="control-card lookup-panel">
             <div class="control-heading">
               <span>2</span>
               <div>
@@ -56,20 +69,6 @@
               <p id="lookup-message" class="lookup-message" aria-live="polite"></p>
             </form>
           </section>
-
-        </aside>
-
-        <section class="preview-pane" aria-label="활동지 미리보기">
-          <div class="preview-toolbar">
-            <div>
-              <p>활동지 미리보기</p>
-              <span id="status" aria-live="polite">1개의 미로가 준비됐어요</span>
-            </div>
-            <button id="toggle-solution" type="button" class="solution-button" aria-pressed="false">정답 보기</button>
-          </div>
-          <div class="preview-stage">
-            <div id="print-area" class="print-area"></div>
-          </div>
           <div class="output-panel" aria-label="인쇄와 PDF 저장">
             <div class="output-buttons">
               <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄하기</button>
