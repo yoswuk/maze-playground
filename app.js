@@ -2,10 +2,26 @@
 
 const NS = "http://www.w3.org/2000/svg";
 const DIFFICULTIES = {
-  easy: { label: "쉬움", size: 12, newestChance: 0.92, straightChance: 0.78, description: "길이 넓고 갈림길이 적어요" },
-  medium: { label: "보통", size: 17, newestChance: 0.63, straightChance: 0.38, description: "조금 더 꼬불꼬불해요" },
-  hard: { label: "어려움", size: 23, newestChance: 0.25, straightChance: 0.12, description: "막다른 길이 많고 촘촘해요" },
-  expert: { label: "매우 어려움", size: 32, newestChance: 0.08, straightChance: 0.03, description: "32×32 최고난도 · 한 장에 1개를 권장해요" },
+  easy: {
+    label: "쉬움", size: 12, newestChance: 0.96, straightChance: 0.68, candidateCount: 8,
+    targets: { solutionRatio: 0.34, deadEndRatio: 0.09, turnRatio: 0.24, branchDepth: 3.5 },
+    description: "12×12 · 길이 넓고 갈림길이 적어요",
+  },
+  medium: {
+    label: "보통", size: 17, newestChance: 0.82, straightChance: 0.35, candidateCount: 9,
+    targets: { solutionRatio: 0.27, deadEndRatio: 0.15, turnRatio: 0.38, branchDepth: 3 },
+    description: "17×17 · 적당한 갈림길과 우회로가 있어요",
+  },
+  hard: {
+    label: "어려움", size: 23, newestChance: 0.68, straightChance: 0.14, candidateCount: 10,
+    targets: { solutionRatio: 0.20, deadEndRatio: 0.19, turnRatio: 0.50, branchDepth: 2.5 },
+    description: "23×23 · 긴 정답 길과 헷갈리는 막다른 길이 많아요",
+  },
+  expert: {
+    label: "매우 어려움", size: 32, newestChance: 0.58, straightChance: 0.06, candidateCount: 12,
+    targets: { solutionRatio: 0.16, deadEndRatio: 0.21, turnRatio: 0.55, branchDepth: 2.2 },
+    description: "32×32 · 길고 촘촘한 최고난도 미로예요",
+  },
 };
 const DIRS = [
   { dr: -1, dc: 0 },
@@ -92,8 +108,7 @@ function findPath(start, end, adjacency, size) {
   return result.reverse().map((index) => cellFromIndex(index, size));
 }
 
-function generateMaze(difficulty, seed, id) {
-  const config = DIFFICULTIES[difficulty];
+function carvePassages(config, seed) {
   const size = config.size;
   const total = size * size;
   const random = makeRandom(seed);
@@ -136,18 +151,26 @@ function generateMaze(difficulty, seed, id) {
     frontier.push(nextIndex);
   }
 
+  return passages;
+}
+
+function buildAdjacency(total, passages) {
   const adjacency = Array.from({ length: total }, () => []);
   for (const key of passages) {
     const [a, b] = key.split(":").map(Number);
     adjacency[a].push(b);
     adjacency[b].push(a);
   }
+  return adjacency;
+}
 
+function findBoundaryRoute(adjacency, size) {
   const left = Array.from({ length: size }, (_, row) => indexOfCell(row, 0, size));
   const right = Array.from({ length: size }, (_, row) => indexOfCell(row, size - 1, size));
   let startIndex = left[0];
   let endIndex = right[0];
   let longest = -1;
+
   for (const candidateStart of left) {
     const distances = distancesFrom(candidateStart, adjacency);
     for (const candidateEnd of right) {
@@ -160,12 +183,93 @@ function generateMaze(difficulty, seed, id) {
   }
 
   return {
-    id,
+    startIndex,
+    endIndex,
+    solution: findPath(startIndex, endIndex, adjacency, size),
+  };
+}
+
+function measureMaze(adjacency, solution, size) {
+  const total = size * size;
+  const degrees = adjacency.map((neighbors) => neighbors.length);
+  const deadEnds = degrees.reduce((count, degree) => count + Number(degree === 1), 0);
+  let turns = 0;
+
+  for (let index = 2; index < solution.length; index += 1) {
+    const previous = solution[index - 2];
+    const current = solution[index - 1];
+    const next = solution[index];
+    const firstDirection = [current.row - previous.row, current.col - previous.col];
+    const secondDirection = [next.row - current.row, next.col - current.col];
+    if (firstDirection[0] !== secondDirection[0] || firstDirection[1] !== secondDirection[1]) turns += 1;
+  }
+
+  let branchDepthTotal = 0;
+  for (let leaf = 0; leaf < total; leaf += 1) {
+    if (degrees[leaf] !== 1) continue;
+    let previous = -1;
+    let current = leaf;
+    let depth = 0;
+    while (degrees[current] <= 2) {
+      const next = adjacency[current].find((neighbor) => neighbor !== previous);
+      if (next === undefined) break;
+      previous = current;
+      current = next;
+      depth += 1;
+      if (degrees[current] !== 2) break;
+    }
+    branchDepthTotal += depth;
+  }
+
+  return {
+    solutionRatio: (solution.length - 1) / Math.max(1, total - 1),
+    deadEndRatio: deadEnds / total,
+    turnRatio: turns / Math.max(1, solution.length - 2),
+    averageBranchDepth: branchDepthTotal / Math.max(1, deadEnds),
+  };
+}
+
+function targetFit(value, target) {
+  return 1 - Math.min(Math.abs(value - target) / Math.max(target, Number.EPSILON), 1);
+}
+
+function qualityScore(metrics, targets) {
+  const solutionFit = targetFit(metrics.solutionRatio, targets.solutionRatio);
+  const deadEndFit = targetFit(metrics.deadEndRatio, targets.deadEndRatio);
+  const turnFit = targetFit(metrics.turnRatio, targets.turnRatio);
+  const branchDepthFit = Math.min(metrics.averageBranchDepth / targets.branchDepth, 1);
+  return solutionFit * 4 + deadEndFit * 2 + turnFit * 1.25 + branchDepthFit * 0.75;
+}
+
+function buildCandidate(config, seed) {
+  const size = config.size;
+  const passages = carvePassages(config, seed);
+  const adjacency = buildAdjacency(size * size, passages);
+  const route = findBoundaryRoute(adjacency, size);
+  const metrics = measureMaze(adjacency, route.solution, size);
+  return {
     size,
     passages,
-    start: { ...cellFromIndex(startIndex, size), direction: "left" },
-    end: { ...cellFromIndex(endIndex, size), direction: "right" },
-    solution: findPath(startIndex, endIndex, adjacency, size),
+    start: { ...cellFromIndex(route.startIndex, size), direction: "left" },
+    end: { ...cellFromIndex(route.endIndex, size), direction: "right" },
+    solution: route.solution,
+    quality: qualityScore(metrics, config.targets),
+  };
+}
+
+function generateMaze(difficulty, seed, id) {
+  const config = DIFFICULTIES[difficulty];
+  let best = null;
+
+  for (let attempt = 0; attempt < config.candidateCount; attempt += 1) {
+    const candidateSeed = hashText(`${seed}-${difficulty}-candidate-${attempt}`);
+    const candidate = buildCandidate(config, candidateSeed);
+    if (!best || candidate.quality > best.quality) best = candidate;
+  }
+
+  return {
+    ...best,
+    id,
   };
 }
 
