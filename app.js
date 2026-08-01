@@ -420,9 +420,6 @@ function syncDifficultySlider() {
   elements.difficultySlider.value = String(index);
   elements.difficultySlider.style.setProperty("--difficulty-progress", `${index / (DIFFICULTY_KEYS.length - 1) * 100}%`);
   elements.difficultySlider.setAttribute("aria-valuetext", `${config.label} ${config.size}×${config.size}`);
-  document.querySelectorAll("[data-difficulty-label]").forEach((label) => {
-    label.dataset.active = String(label.dataset.difficultyLabel === state.difficulty);
-  });
 }
 
 function render() {

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="아이를 위한 A4 인쇄용 미로 활동지 생성기" />
     <title>미로 놀이터</title>
-    <link rel="stylesheet" href="./styles.css?v=20260801-13" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-15" />
   </head>
   <body>
     <main class="app-shell">
@@ -27,12 +27,6 @@
           <div class="maze-controls" aria-label="미로 설정과 조작">
             <div class="difficulty-slider-control">
               <input id="difficulty-slider" type="range" min="0" max="3" step="1" value="0" aria-label="미로 난이도" aria-valuetext="쉬움 12×12" />
-              <div class="difficulty-scale" aria-hidden="true">
-                <span data-difficulty-label="easy">쉬움<small>12×12</small></span>
-                <span data-difficulty-label="medium">보통<small>18×18</small></span>
-                <span data-difficulty-label="hard">어려움<small>24×24</small></span>
-                <span data-difficulty-label="expert">매우 어려움<small>30×30</small></span>
-              </div>
             </div>
             <div class="maze-actions" aria-label="미로 조작">
               <button id="toggle-solution" type="button" class="solution-button" aria-pressed="false">정답 보기</button>
@@ -40,10 +34,6 @@
             </div>
           </div>
           <div class="output-panel" aria-label="미로 인쇄">
-            <div class="output-heading">
-              <strong>출력</strong>
-              <span>입력한 개수만큼 미로를 만들어요.</span>
-            </div>
             <div class="output-buttons">
               <button id="print-maze" type="button" class="print-button"><span aria-hidden="true">⌁</span>인쇄하기</button>
             </div>
@@ -63,6 +53,6 @@
       </div>
     </main>
 
-    <script src="./app.js?v=20260801-13" defer></script>
+    <script src="./app.js?v=20260801-14" defer></script>
   </body>
 </html>
