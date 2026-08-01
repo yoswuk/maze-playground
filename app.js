@@ -3,19 +3,19 @@
 const NS = "http://www.w3.org/2000/svg";
 const DIFFICULTIES = {
   easy: {
-    label: "쉬움", size: 12, newestChance: 0.96, straightChance: 0.68, candidateCount: 8,
+    label: "쉬움", size: 8, newestChance: 0.96, straightChance: 0.68, candidateCount: 8,
     targets: { solutionRatio: 0.34, deadEndRatio: 0.09, turnRatio: 0.24, branchDepth: 3.5 },
-    description: "12×12 · 길이 넓고 갈림길이 적어요",
+    description: "8×8 · 길이 넓고 갈림길이 적어요",
   },
   medium: {
-    label: "보통", size: 17, newestChance: 0.82, straightChance: 0.35, candidateCount: 9,
+    label: "보통", size: 16, newestChance: 0.82, straightChance: 0.35, candidateCount: 9,
     targets: { solutionRatio: 0.27, deadEndRatio: 0.15, turnRatio: 0.38, branchDepth: 3 },
-    description: "17×17 · 적당한 갈림길과 우회로가 있어요",
+    description: "16×16 · 적당한 갈림길과 우회로가 있어요",
   },
   hard: {
-    label: "어려움", size: 23, newestChance: 0.68, straightChance: 0.14, candidateCount: 10,
+    label: "어려움", size: 24, newestChance: 0.68, straightChance: 0.14, candidateCount: 10,
     targets: { solutionRatio: 0.20, deadEndRatio: 0.19, turnRatio: 0.50, branchDepth: 2.5 },
-    description: "23×23 · 긴 정답 길과 헷갈리는 막다른 길이 많아요",
+    description: "24×24 · 긴 정답 길과 헷갈리는 막다른 길이 많아요",
   },
   expert: {
     label: "매우 어려움", size: 32, newestChance: 0.58, straightChance: 0.06, candidateCount: 12,
@@ -29,10 +29,16 @@ const DIRS = [
   { dr: 1, dc: 0 },
   { dr: 0, dc: -1 },
 ];
+const DIFFICULTY_NUMBERS = { easy: "1", medium: "2", hard: "3", expert: "4" };
+const NUMBER_DIFFICULTIES = Object.fromEntries(Object.entries(DIFFICULTY_NUMBERS).map(([key, value]) => [value, key]));
+const MAX_MAZE_SEED = 0xffffff;
+const PDF_LIBRARY_URLS = {
+  html2canvas: "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+  jspdf: "https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js",
+};
 
 const state = {
   difficulty: "easy",
-  perPage: 1,
   seed: 260801,
   showSolution: false,
   printAnswers: true,
@@ -45,6 +51,10 @@ const elements = {
   difficultyDescription: document.querySelector("#difficulty-description"),
   toggleSolution: document.querySelector("#toggle-solution"),
   printAnswers: document.querySelector("#print-answers"),
+  lookupForm: document.querySelector("#maze-lookup"),
+  mazeNumber: document.querySelector("#maze-number"),
+  lookupMessage: document.querySelector("#lookup-message"),
+  savePdf: document.querySelector("#save-pdf"),
 };
 
 function hashText(value) {
@@ -54,6 +64,33 @@ function hashText(value) {
     hash = Math.imul(hash, 16777619);
   }
   return hash >>> 0;
+}
+
+function mazeChecksum(difficulty, seed) {
+  return hashText(`${DIFFICULTY_NUMBERS[difficulty]}:${seed}:maze-playground`) % 97;
+}
+
+function formatMazeNumber(difficulty, seed) {
+  const safeSeed = seed & MAX_MAZE_SEED;
+  const seedText = String(safeSeed).padStart(8, "0");
+  const checksum = String(mazeChecksum(difficulty, safeSeed)).padStart(2, "0");
+  return `${DIFFICULTY_NUMBERS[difficulty]}-${seedText}-${checksum}`;
+}
+
+function parseMazeNumber(value) {
+  const raw = value.trim();
+  if (/[^0-9\s-]/.test(raw)) throw new Error("숫자와 하이픈만 입력해 주세요.");
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length !== 11) throw new Error("미로 번호 11자리를 확인해 주세요.");
+
+  const difficulty = NUMBER_DIFFICULTIES[digits[0]];
+  if (!difficulty) throw new Error("첫 숫자는 1부터 4까지여야 해요.");
+  const seed = Number(digits.slice(1, 9));
+  if (!Number.isInteger(seed) || seed > MAX_MAZE_SEED) throw new Error("미로 번호의 가운데 숫자를 확인해 주세요.");
+  const expectedChecksum = mazeChecksum(difficulty, seed);
+  if (Number(digits.slice(9)) !== expectedChecksum) throw new Error("미로 번호가 맞지 않아요. 다시 확인해 주세요.");
+
+  return { difficulty, seed, number: formatMazeNumber(difficulty, seed) };
 }
 
 function makeRandom(seed) {
@@ -374,41 +411,114 @@ function worksheetPage(mazes, answer) {
   page.append(grid);
   const footer = document.createElement("footer");
   footer.className = "worksheet-footer";
-  footer.innerHTML = `<span>천천히 보고, 막히면 다른 길을 찾아봐요.</span><span>미로 번호 ${String(state.seed % 1000000).padStart(6, "0")}</span>`;
+  footer.innerHTML = `<span>천천히 보고, 막히면 다른 길을 찾아봐요.</span><span>미로 번호 ${mazes[0].id}</span>`;
   page.append(footer);
   return page;
 }
 
 function generateAll() {
-  state.mazes = Array.from({ length: state.perPage }, (_, index) =>
-    generateMaze(state.difficulty, hashText(`${state.seed}-${state.difficulty}-${index}`), `${state.seed}-${index}`)
-  );
+  const mazeSeed = hashText(`${state.seed}-${state.difficulty}`) & MAX_MAZE_SEED;
+  const mazeNumber = formatMazeNumber(state.difficulty, mazeSeed);
+  state.mazes = [generateMaze(state.difficulty, mazeSeed, mazeNumber)];
+}
+
+function syncDifficultyButtons() {
+  document.querySelectorAll("[data-difficulty]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.difficulty === state.difficulty));
+  });
 }
 
 function render() {
   elements.printArea.replaceChildren();
   elements.printArea.append(worksheetPage(state.mazes, false));
   if (state.printAnswers) elements.printArea.append(worksheetPage(state.mazes, true));
-  elements.status.textContent = `${state.mazes.length}개의 미로가 준비됐어요`;
+  elements.status.textContent = `미로 ${state.mazes[0].id}가 준비됐어요`;
   elements.difficultyDescription.textContent = DIFFICULTIES[state.difficulty].description;
   elements.toggleSolution.textContent = state.showSolution ? "정답 숨기기" : "정답 보기";
   elements.toggleSolution.setAttribute("aria-pressed", String(state.showSolution));
+  syncDifficultyButtons();
+}
+
+function setLookupMessage(message, error = false) {
+  elements.lookupMessage.textContent = message;
+  elements.lookupMessage.classList.toggle("is-error", error);
+}
+
+function loadExternalScript(src, isReady) {
+  if (isReady()) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.addEventListener("load", () => isReady() ? resolve() : reject(new Error(`라이브러리를 불러오지 못했습니다: ${src}`)));
+    script.addEventListener("error", () => reject(new Error(`라이브러리를 불러오지 못했습니다: ${src}`)));
+    document.head.append(script);
+  });
+}
+
+let pdfLibrariesPromise = null;
+function ensurePdfLibraries() {
+  if (!pdfLibrariesPromise) {
+    pdfLibrariesPromise = Promise.all([
+      loadExternalScript(PDF_LIBRARY_URLS.html2canvas, () => typeof window.html2canvas === "function"),
+      loadExternalScript(PDF_LIBRARY_URLS.jspdf, () => typeof window.jspdf?.jsPDF === "function"),
+    ]).catch((error) => {
+      pdfLibrariesPromise = null;
+      throw error;
+    });
+  }
+  return pdfLibrariesPromise;
+}
+
+function nextFrame() {
+  return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+async function saveCurrentMazeAsPdf() {
+  await ensurePdfLibraries();
+  if (document.fonts?.ready) await document.fonts.ready;
+
+  const pages = [...elements.printArea.querySelectorAll(".worksheet-page")];
+  const host = document.createElement("div");
+  host.className = "pdf-capture-host";
+  document.body.append(host);
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
+
+    for (let index = 0; index < pages.length; index += 1) {
+      const page = pages[index].cloneNode(true);
+      page.querySelectorAll(".screen-solution").forEach((element) => element.remove());
+      host.replaceChildren(page);
+      await nextFrame();
+
+      const canvas = await window.html2canvas(page, {
+        backgroundColor: "#ffffff",
+        logging: false,
+        scale: 3,
+        useCORS: true,
+        width: 794,
+        height: 1123,
+        windowWidth: 1440,
+        windowHeight: 1123,
+      });
+      if (index > 0) pdf.addPage("a4", "portrait");
+      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, 210, 297, undefined, "FAST");
+      canvas.width = 1;
+      canvas.height = 1;
+    }
+
+    pdf.save(`miro-${state.mazes[0].id}.pdf`);
+  } finally {
+    host.remove();
+  }
 }
 
 document.querySelectorAll("[data-difficulty]").forEach((button) => {
   button.addEventListener("click", () => {
     state.difficulty = button.dataset.difficulty;
     state.showSolution = false;
-    document.querySelectorAll("[data-difficulty]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-    generateAll();
-    render();
-  });
-});
-
-document.querySelectorAll("[data-per-page]").forEach((button) => {
-  button.addEventListener("click", () => {
-    state.perPage = Number(button.dataset.perPage);
-    document.querySelectorAll("[data-per-page]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
     generateAll();
     render();
   });
@@ -422,15 +532,48 @@ elements.toggleSolution.addEventListener("click", () => {
   state.showSolution = !state.showSolution;
   render();
 });
+elements.lookupForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  try {
+    const parsed = parseMazeNumber(elements.mazeNumber.value);
+    state.difficulty = parsed.difficulty;
+    state.seed = parsed.seed;
+    state.showSolution = false;
+    state.mazes = [generateMaze(parsed.difficulty, parsed.seed, parsed.number)];
+    elements.mazeNumber.value = parsed.number;
+    render();
+    setLookupMessage("같은 미로를 불러왔어요.");
+  } catch (error) {
+    setLookupMessage(error.message, true);
+  }
+});
 document.querySelector("#new-maze").addEventListener("click", () => {
   const random = new Uint32Array(1);
   crypto.getRandomValues(random);
-  state.seed = random[0];
+  state.seed = random[0] & MAX_MAZE_SEED;
   state.showSolution = false;
+  elements.mazeNumber.value = "";
+  setLookupMessage("");
   generateAll();
   render();
 });
 document.querySelector("#print-maze").addEventListener("click", () => window.print());
+elements.savePdf.addEventListener("click", async () => {
+  const original = elements.savePdf.innerHTML;
+  elements.savePdf.disabled = true;
+  elements.savePdf.textContent = "PDF 만드는 중…";
+  elements.status.textContent = "PDF 파일을 만들고 있어요";
+  try {
+    await saveCurrentMazeAsPdf();
+    elements.status.textContent = "PDF 파일을 저장했어요";
+  } catch (error) {
+    console.error(error);
+    elements.status.textContent = "PDF 저장에 실패했어요. 인터넷 연결을 확인해 주세요";
+  } finally {
+    elements.savePdf.disabled = false;
+    elements.savePdf.innerHTML = original;
+  }
+});
 
 generateAll();
 render();
